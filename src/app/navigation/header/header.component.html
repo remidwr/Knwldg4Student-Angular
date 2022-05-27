@@ -1,0 +1,53 @@
+<mat-toolbar color="primary">
+  <div fxHide.gt-xs>
+    <button mat-icon-button (click)="onToggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  <div>
+    <a routerLink="/home"
+      ><span id="knwldg-title">Knwldg</span><span id="four-title">4</span
+      ><span id="student-title">Student</span></a
+    >
+  </div>
+  <div fxFlex fxLayout fxLayoutAlign="space-between center" fxHide.xs>
+    <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+      <li>
+        <button mat-button routerLink="/section">Sections</button>
+      </li>
+      <li>
+        <button mat-button routerLink="/student">Formateurs</button>
+      </li>
+      <ng-container *ngIf="auth.isAuthenticated$ | async">
+        <li>
+          <button mat-button routerLink="#">Meetings</button>
+        </li>
+      </ng-container>
+    </ul>
+    <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+      <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+        <li>
+          <button mat-button routerLink="/profile">Profil</button>
+        </li>
+        <li>
+          <button
+            mat-button
+            (click)="auth.logout({ returnTo: document.location.origin })"
+          >
+            Se déconnecter
+          </button>
+        </li>
+      </ng-container>
+      <ng-template #loggedOut>
+        <li>
+          <button mat-button (click)="auth.loginWithRedirect()">
+            Se connecter
+          </button>
+        </li>
+        <li>
+          <button mat-button routerLink="/register">S'enregistrer</button>
+        </li>
+      </ng-template>
+    </ul>
+  </div>
+</mat-toolbar>

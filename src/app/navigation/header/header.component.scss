@@ -1,0 +1,34 @@
+a {
+  text-decoration: none;
+  color: white;
+}
+
+a:hover, a:active{
+  color: lightgray;
+}
+
+ul li button {
+  font-size: 1.1rem;
+}
+
+.navigation-items{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  padding-left: 3rem;
+}
+
+#four-title {
+  color: yellow;
+  font-weight: bolder;
+  font-size: larger;
+}
+
+#student-title {
+  font-size: smaller;
+  font-weight:lighter;
+}
+
+#knwldg-title {
+  font-size:larger;
+}
