@@ -1,0 +1,69 @@
+<form [formGroup]="registerForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-card-title>S'enregistrer</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col-12">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Nom d'utilisateur</mat-label>
+            <input matInput placeholder="John Doe" formControlName="username" />
+            <mat-error
+              *ngIf="registerForm.controls['username'].hasError('required')"
+            >
+              Le nom d'utilisateur est <strong>requis</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-12">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Adresse email</mat-label>
+            <input
+              matInput
+              type="email"
+              placeholder="john.doe@mail.com"
+              formControlName="email"
+            />
+            <mat-error
+              *ngIf="registerForm.controls['email'].hasError('required')"
+            >
+              L'adresse email est <strong>requis</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-12">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Mot de passe</mat-label>
+            <input
+              matInput
+              [type]="hide ? 'password' : 'text'"
+              placeholder="Mot de passe"
+              formControlName="password"
+            />
+            <button
+              type="button"
+              mat-icon-button
+              matSuffix
+              (click)="hide = !hide"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide"
+            >
+              <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('required')"
+            >
+              Le mot de passe est <strong>requis</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="button-centered">
+        <button mat-raised-button class="big-btn" color="primary" type="submit">
+          S'inscrire
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</form>

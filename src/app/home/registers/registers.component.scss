@@ -1,0 +1,28 @@
+.full-width {
+  width: 100%;
+}
+
+.mid-width {
+  width: 50%;
+}
+
+.register-card {
+  max-width: 25rem;
+  min-width: 25rem;
+  margin: 2rem auto;
+}
+
+// mat-card {
+//   background-color: #f0f0f0;
+// }
+
+.button-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.big-btn {
+  width: 320px;
+  height: 52px;
+}
