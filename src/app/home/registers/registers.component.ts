@@ -1,21 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '@auth0/auth0-angular';
+import { Subscription } from 'rxjs';
+import { StudentService } from 'src/app/services/student.service';
 
 @Component({
   selector: 'app-registers',
   templateUrl: './registers.component.html',
   styleUrls: ['./registers.component.scss'],
 })
-export class RegistersComponent implements OnInit {
+export class RegistersComponent implements OnInit, OnDestroy {
+  subscription: Subscription = new Subscription();
   registerForm: FormGroup;
   hide = true;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private studentService: StudentService,
+    private auth: AuthService
+  ) {
     this.registerForm = this.fb.group({
       username: [
         null,
@@ -43,6 +46,12 @@ export class RegistersComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    console.log(this.registerForm);
+    this.subscription = this.studentService
+      .createStudent(this.registerForm.value)
+      .subscribe(() => this.auth.loginWithRedirect());
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }

@@ -41,7 +41,7 @@ export class StudentService {
       });
   }
 
-  public createStudent(input: StudentInput) {
-    this.http.post(`${this.API_URL}/api/v1/students`, input);
+  public createStudent(input: StudentInput): Observable<unknown> {
+    return this.http.post(`${this.API_URL}/api/v1/students`, input);
   }
 }
