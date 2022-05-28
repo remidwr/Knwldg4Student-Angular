@@ -4,6 +4,7 @@ export interface StudentsVm {
 
 export interface Student {
   id: number;
+  username: string;
   firstName: string;
   lastName: string;
   averageRating: number;

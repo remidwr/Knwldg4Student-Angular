@@ -5,15 +5,15 @@ import { MatTable } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { StudentService } from 'src/app/services/student.service';
-import { StudentDataSource, StudentItem } from './student-datasource';
+import { StudentDataSource } from './student-datasource';
 import { Student } from './student.model';
 
 @Component({
-  selector: 'app-student',
-  templateUrl: './student.component.html',
-  styleUrls: ['./student.component.scss'],
+  selector: 'app-students',
+  templateUrl: './students.component.html',
+  styleUrls: ['./students.component.scss'],
 })
-export class StudentComponent implements AfterViewInit {
+export class StudentsComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<Student>;
@@ -22,7 +22,7 @@ export class StudentComponent implements AfterViewInit {
   public students: Student[] = [];
   public subscription: Subscription = new Subscription();
 
-  public displayedColumns = ['id', 'firstName', 'lastName', 'averageRating'];
+  public displayedColumns = ['id', 'username', 'firstName', 'averageRating'];
 
   public resultsLength = 0;
   public isLoadingResults = true;

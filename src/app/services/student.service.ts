@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, Subject } from 'rxjs';
 import { environment as env } from 'src/environments/environment';
 import { StudentInput } from '../home/registers/register.model';
-import { Student, StudentsVm } from '../home/student/student.model';
+import { Student, StudentsVm } from '../home/students/student.model';
 
 @Injectable({
   providedIn: 'root',

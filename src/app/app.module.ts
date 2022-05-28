@@ -16,7 +16,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { environment as env } from '../environments/environment';
 import { LayoutModule } from '@angular/cdk/layout';
-import { StudentComponent } from './home/student/student.component';
+import { StudentsComponent } from './home/students/students.component';
 import { SectionsComponent } from './home/sections/sections.component';
 import { ProfileComponent } from './home/profile/profile.component';
 
@@ -28,7 +28,7 @@ import { ProfileComponent } from './home/profile/profile.component';
     HomeComponent,
     RegistersComponent,
     HomeComponent,
-    StudentComponent,
+    StudentsComponent,
     SectionsComponent,
     ProfileComponent,
   ],
