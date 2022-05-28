@@ -31,7 +31,23 @@
 
     <ng-container matColumnDef="averageRating">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Note moyenne</th>
-      <td mat-cell *matCellDef="let student">{{ student.averageRating }}</td>
+      <td mat-cell *matCellDef="let student">
+        <mat-icon *ngIf="student.averageRating > 0; else starOutlined"
+          >star</mat-icon
+        >
+        <mat-icon *ngIf="student.averageRating > 1; else starOutlined"
+          >star</mat-icon
+        >
+        <mat-icon *ngIf="student.averageRating > 2; else starOutlined"
+          >star</mat-icon
+        >
+        <mat-icon *ngIf="student.averageRating > 3; else starOutlined"
+          >star</mat-icon
+        >
+        <mat-icon *ngIf="student.averageRating > 4; else starOutlined"
+          >star</mat-icon
+        >
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -47,3 +63,7 @@
   >
   </mat-paginator>
 </div>
+
+<ng-template #starOutlined>
+  <mat-icon>star_border</mat-icon>
+</ng-template>

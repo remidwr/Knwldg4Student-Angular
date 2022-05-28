@@ -1,72 +1,93 @@
 import {
-  AfterViewInit,
   Component,
   OnDestroy,
   OnInit,
+  QueryList,
   ViewChild,
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  catchError,
-  map,
-  merge,
-  startWith,
-  Subscription,
-  switchMap,
-} from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SectionService } from 'src/app/home/sections/section.service';
-import { Section } from './section.model';
-import { SectionDataSource, SectionItem } from './sections-datasource';
+import { Course, Section } from './section.model';
 
 @Component({
   selector: 'app-sections',
   templateUrl: './sections.component.html',
   styleUrls: ['./sections.component.scss'],
 })
-export class SectionsComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatTable) table!: MatTable<Section>;
-  dataSource: SectionDataSource;
+export class SectionsComponent implements OnInit, OnDestroy {
+  @ViewChild('outerSort', { static: true }) sort!: MatSort;
+  @ViewChild('innerSort') innerSort!: QueryList<MatSort>;
+  @ViewChild('innerTables') innerTables!: QueryList<MatTable<Course>>;
 
-  public sections: Section[] = [];
-  public subscription: Subscription = new Subscription();
+  public sectionDataSource!: MatTableDataSource<Section>;
+  public courseDataSource!: MatTableDataSource<Course>;
+  public sectionsData: Section[] = [];
+  public coursesData: Course[] = [];
+  public sectionSubscription: Subscription = new Subscription();
+  public courseSubscription: Subscription = new Subscription();
 
-  public displayedColumns = ['id', 'title'];
+  public columnsToDisplay = ['id', 'title'];
+  public innerDisplayedColumns = ['id', 'label'];
 
-  public resultsLength = 0;
-  public isLoadingResults = true;
+  public sectionsLength = 0;
+  public coursesLength = 0;
+  public isLoadingSections = true;
+  public isLoadingCourses = true;
   public isRateLimitReached = false;
+  public expandedElement!: Section | null;
+  public expanded: boolean = false;
 
   constructor(
     private sectionService: SectionService,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.dataSource = new SectionDataSource();
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.subscription = this.sectionService.sectionsChanged.subscribe(
+    this.sectionSubscription = this.sectionService.sectionsChanged.subscribe(
       (sections: Section[]) => {
-        this.isLoadingResults = false;
-        this.resultsLength = sections.length;
-        this.table.dataSource = sections;
+        this.isLoadingSections = false;
+        this.sectionsData = sections;
+        this.sectionsLength = sections.length;
+        this.sectionDataSource = new MatTableDataSource(sections);
+        this.sectionDataSource.sort = this.sort;
       }
     );
 
-    this.sections = this.sectionService.getSections();
+    this.sectionsData = this.sectionService.getSections();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+  toggleRow(row: Section) {
+    if (this.expanded === false) {
+      this.courseSubscription = this.sectionService.coursesChanged.subscribe(
+        (courses: Course[]) => {
+          if (courses.length) {
+            this.expanded = true;
+          }
+
+          let coursesData = this.sectionsData
+            .filter((section) => section.id === row.id)
+            .map((section) => section.courses)
+            .shift();
+
+          this.coursesData = coursesData as Course[];
+          this.courseDataSource = new MatTableDataSource(coursesData);
+
+          this.courseSubscription.unsubscribe();
+        }
+      );
+
+      this.coursesData = this.sectionService.getCoursesBySectionId(row.id);
+    } else {
+      this.expanded = false;
+    }
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.sectionSubscription.unsubscribe();
+    this.courseSubscription.unsubscribe();
   }
 }

@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Subject } from 'rxjs';
+import { map, Subject, Subscription } from 'rxjs';
 import { environment as env } from 'src/environments/environment';
-import { Section, SectionsVm } from './section.model';
+import { Course, Section, SectionsVm } from './section.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,9 @@ import { Section, SectionsVm } from './section.model';
 export class SectionService {
   private API_URL = env.API_URL;
   public sectionsChanged = new Subject<Section[]>();
+  public coursesChanged = new Subject<Course[]>();
   private sections: Section[] = [];
+  private courses: Course[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -37,6 +39,32 @@ export class SectionService {
       )
       .subscribe((sections) => {
         this.setSections(sections);
+      });
+  }
+
+  public getCoursesBySectionId(id: number): Course[] {
+    this.getCoursesBySectionIdFromApi(id);
+    return this.courses;
+  }
+
+  public setCourses(courses: Course[]) {
+    this.courses = courses;
+
+    this.coursesChanged.next(this.courses);
+  }
+
+  private getCoursesBySectionIdFromApi(id: number) {
+    this.http
+      .get<Course[]>(`${this.API_URL}/api/v1/sections/${id}/courses`)
+      .pipe(
+        map((responseData) => {
+          this.courses = responseData;
+
+          return this.courses;
+        })
+      )
+      .subscribe((courses) => {
+        this.setCourses(courses);
       });
   }
 }

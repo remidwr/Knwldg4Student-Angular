@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {
+  BrowserAnimationsModule,
+  NoopAnimationsModule,
+} from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './navigation/header/header.component';
@@ -36,6 +39,7 @@ import { ProfileComponent } from './home/profile/profile.component';
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
+    NoopAnimationsModule,
     FlexLayoutModule,
     FormsModule,
     HttpClientModule,
