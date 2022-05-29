@@ -2,7 +2,7 @@
   "domain": "dev-x7hgpxui.us.auth0.com",
   "clientId": "P3YLoptC0p0G1St9Hu8q81r5hnRj6KzM",
   "audience": "https://localhost:7083",
-  "apiUri": "http://localhost:5001",
+  "apiUri": "https://localhost:7083",
   "appUri": "http://localhost:4200",
   "errorPath": "/error"
 }

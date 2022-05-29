@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '@auth0/auth0-angular';
 import { Subscription } from 'rxjs';
-import { StudentService } from 'src/app/services/student.service';
+import { StudentService } from 'src/app/shared/services/student.service';
 
 @Component({
   selector: 'app-registers',
@@ -10,9 +10,9 @@ import { StudentService } from 'src/app/services/student.service';
   styleUrls: ['./registers.component.scss'],
 })
 export class RegistersComponent implements OnInit, OnDestroy {
-  subscription: Subscription = new Subscription();
-  registerForm: FormGroup;
-  hide = true;
+  private subscription: Subscription = new Subscription();
+  public registerForm: FormGroup;
+  public hide = true;
 
   constructor(
     private fb: FormBuilder,

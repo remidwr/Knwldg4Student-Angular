@@ -17,9 +17,7 @@ export const environment = {
   auth: {
     domain,
     clientId,
-    ...(audience && audience !== 'https://localhost:7083'
-      ? { audience }
-      : null),
+    audience,
     redirectUri: window.location.origin,
     errorPath,
   },

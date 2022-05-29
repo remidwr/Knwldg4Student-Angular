@@ -21,7 +21,8 @@ import { environment as env } from '../environments/environment';
 import { LayoutModule } from '@angular/cdk/layout';
 import { StudentsComponent } from './home/students/students.component';
 import { SectionsComponent } from './home/sections/sections.component';
-import { ProfileComponent } from './home/profile/profile.component';
+import { ProfilesComponent } from './home/profiles/profiles.component';
+import { CustomHttpInterceptorService } from './shared/interceptors/custom-http-interceptor';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,7 @@ import { ProfileComponent } from './home/profile/profile.component';
     HomeComponent,
     StudentsComponent,
     SectionsComponent,
-    ProfileComponent,
+    ProfilesComponent,
   ],
   imports: [
     CommonModule,
@@ -49,7 +50,7 @@ import { ProfileComponent } from './home/profile/profile.component';
     AuthModule.forRoot({
       ...env.auth,
       httpInterceptor: {
-        ...env.httpInterceptor,
+        allowedList: [env.API_URL + '/*'],
       },
     }),
     LayoutModule,

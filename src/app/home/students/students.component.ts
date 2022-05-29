@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { StudentService } from 'src/app/services/student.service';
+import { StudentService } from 'src/app/shared/services/student.service';
 import { StudentDataSource } from './student-datasource';
 import { Student } from './student.model';
 
@@ -25,7 +25,7 @@ export class StudentsComponent implements AfterViewInit {
   public displayedColumns = ['id', 'username', 'firstName', 'averageRating'];
 
   public resultsLength = 0;
-  public isLoadingResults = true;
+  public isLoadingResults = false;
   public isRateLimitReached = false;
 
   constructor(
@@ -37,15 +37,27 @@ export class StudentsComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.subscription = this.studentService.studentsChanged.subscribe(
-      (students: Student[]) => {
-        this.isLoadingResults = false;
-        this.resultsLength = students.length;
-        this.table.dataSource = students;
-      }
-    );
+    // this.subscription = this.studentService.studentsChanged.subscribe(
+    //   (students: Student[]) => {
+    //     this.isLoadingResults = false;
+    //     this.resultsLength = students.length;
+    //     this.table.dataSource = students;
+    //   }
+    // );
 
-    this.students = this.studentService.getStudents();
+    this.isLoadingResults = true;
+
+    this.subscription = this.studentService.getStudents$().subscribe({
+      next: (students) => {
+        this.isLoadingResults = false;
+        this.students = students;
+        this.resultsLength = students.length;
+        this.table.dataSource = this.students;
+      },
+      error: (err) => {},
+    });
+
+    // this.students = this.studentService.getStudents();
   }
 
   ngAfterViewInit(): void {

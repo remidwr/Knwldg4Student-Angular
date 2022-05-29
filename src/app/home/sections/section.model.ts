@@ -1,5 +1,3 @@
-import { MatTableDataSource } from '@angular/material/table';
-
 export interface SectionsVm {
   sections: Section[];
 }
