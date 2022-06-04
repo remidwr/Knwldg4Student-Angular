@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService, User } from '@auth0/auth0-angular';
-import { concatMap, pluck, Subscription, tap } from 'rxjs';
+import { AuthService } from '@auth0/auth0-angular';
+import { Subscription } from 'rxjs';
 import { StudentService } from 'src/app/shared/services/student.service';
 import { StudentDetailed } from './profile.model';
-import { environment as env } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profiles',
@@ -19,11 +18,9 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   private userId!: string;
   public profileForm: FormGroup;
   public error: any = null;
-  private currentUser!: User;
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
     public auth: AuthService,
     public studentService: StudentService
   ) {
@@ -40,23 +37,30 @@ export class ProfilesComponent implements OnInit, OnDestroy {
       this.error = errorMessage;
     });
 
+    this.studentService.studentDetailedChanged.subscribe(
+      (student: StudentDetailed) => {
+        this.detailedStudent = student;
+        this.profileForm.get('firstName')?.patchValue(student.firstName);
+        this.profileForm.get('lastName')?.patchValue(student.lastName);
+        this.profileForm.get('description')?.patchValue(student.description);
+      }
+    );
+
     this.authSub = this.auth.getUser().subscribe((user) => {
       console.log(user);
       // this.profileForm.get('id')?.patchValue(claims?.sub);
       // console.log(this.profileForm.get('id'));
 
       this.userId = user?.sub as string;
+
       console.log(this.userId);
+      this.detailedStudent = this.studentService.getDetailedStudent(
+        this.userId
+      );
     });
-
-    this.studentService.studentDetailedChanged.subscribe(
-      (student: StudentDetailed) => {
-        this.detailedStudent = student;
-      }
-    );
-
-    this.detailedStudent = this.studentService.getDetailedStudent(2);
   }
+
+  public onSubmit() {}
 
   ngOnDestroy(): void {
     this.studentSub.unsubscribe();

@@ -61,6 +61,8 @@ export class SectionsComponent implements OnInit, OnDestroy {
   }
 
   toggleRow(row: Section) {
+    console.log(row.courses);
+
     if (this.expanded === false) {
       this.courseSubscription = this.sectionService.coursesChanged.subscribe(
         (courses: Course[]) => {

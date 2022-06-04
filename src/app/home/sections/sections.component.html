@@ -33,7 +33,10 @@
         [attr.colspan]="columnsToDisplay.length"
       >
         <div class="example-element-detail">
-          <div class="inner-table mat-elevation-z8" *ngIf="expanded">
+          <div
+            class="inner-table mat-elevation-z8"
+            *ngIf="expanded && section.courses.length > 0"
+          >
             <table
               #innerTables
               mat-table

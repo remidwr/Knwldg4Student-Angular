@@ -22,7 +22,6 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { StudentsComponent } from './home/students/students.component';
 import { SectionsComponent } from './home/sections/sections.component';
 import { ProfilesComponent } from './home/profiles/profiles.component';
-import { CustomHttpInterceptorService } from './shared/interceptors/custom-http-interceptor';
 
 @NgModule({
   declarations: [
@@ -47,13 +46,13 @@ import { CustomHttpInterceptorService } from './shared/interceptors/custom-http-
     AppRoutingModule,
     ReactiveFormsModule,
     AppMaterialModule,
+    LayoutModule,
     AuthModule.forRoot({
       ...env.auth,
       httpInterceptor: {
-        allowedList: [env.API_URL + '/*'],
+        ...env.httpInterceptor,
       },
     }),
-    LayoutModule,
   ],
   providers: [
     {

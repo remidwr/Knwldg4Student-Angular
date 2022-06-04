@@ -39,7 +39,7 @@ export class StudentService {
     );
   }
 
-  public getDetailedStudent(id: number) {
+  public getDetailedStudent(id: string) {
     this.getStudentByIdFromApi(id);
     return this.studentDetailed;
   }
@@ -50,7 +50,7 @@ export class StudentService {
     this.studentDetailedChanged.next(this.studentDetailed);
   }
 
-  private getStudentByIdFromApi(id: number) {
+  private getStudentByIdFromApi(id: string) {
     this.http
       .get<StudentDetailed>(`${this.API_URL}/api/v1/students/${id}`)
       .pipe(

@@ -13,7 +13,7 @@ const { domain, clientId, audience, apiUri, errorPath } = config as {
 
 export const environment = {
   production: false,
-  API_URL: 'https://localhost:7083',
+  API_URL: audience,
   auth: {
     domain,
     clientId,
@@ -22,7 +22,7 @@ export const environment = {
     errorPath,
   },
   httpInterceptor: {
-    allowedList: [`${apiUri}/*`],
+    allowedList: [`${audience}/api/v1/students/*`],
   },
 };
 
