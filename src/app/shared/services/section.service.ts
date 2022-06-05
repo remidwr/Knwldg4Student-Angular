@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Subject, Subscription } from 'rxjs';
 import { environment as env } from 'src/environments/environment';
-import { Course, Section, SectionsVm } from './section.model';
+import { Course, Section, SectionsVm } from '../models/section.model';
 
 @Injectable({
   providedIn: 'root',

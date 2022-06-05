@@ -34,3 +34,19 @@ export interface Rating {
   comment: string;
   ratedBy: string;
 }
+
+export interface StudentEditionInput {
+  id: number;
+  firstName: string;
+  lastName: string;
+  description: string;
+}
+
+export class StudentEditionInput {
+  constructor(
+    public id: number,
+    public firstName: string,
+    public lastName: string,
+    public description: string
+  ) {}
+}

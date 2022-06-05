@@ -20,8 +20,11 @@ import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { environment as env } from '../environments/environment';
 import { LayoutModule } from '@angular/cdk/layout';
 import { StudentsComponent } from './home/students/students.component';
-import { SectionsComponent } from './home/sections/sections.component';
 import { ProfilesComponent } from './home/profiles/profiles.component';
+import {
+  MeetingsComponent,
+  MeetingsCreateDialogComponent,
+} from './home/meetings/meetings.component';
 
 @NgModule({
   declarations: [
@@ -32,8 +35,9 @@ import { ProfilesComponent } from './home/profiles/profiles.component';
     RegistersComponent,
     HomeComponent,
     StudentsComponent,
-    SectionsComponent,
     ProfilesComponent,
+    MeetingsComponent,
+    MeetingsCreateDialogComponent,
   ],
   imports: [
     CommonModule,

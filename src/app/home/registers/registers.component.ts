@@ -10,7 +10,7 @@ import { StudentService } from 'src/app/shared/services/student.service';
   styleUrls: ['./registers.component.scss'],
 })
 export class RegistersComponent implements OnInit, OnDestroy {
-  private subscription: Subscription = new Subscription();
+  private studentSub: Subscription = new Subscription();
   public registerForm: FormGroup;
   public hide = true;
 
@@ -46,12 +46,12 @@ export class RegistersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    this.subscription = this.studentService
+    this.studentSub = this.studentService
       .createStudent(this.registerForm.value)
       .subscribe(() => this.auth.loginWithRedirect());
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.studentSub.unsubscribe();
   }
 }
