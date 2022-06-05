@@ -1,12 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  FormBuilder,
   FormControl,
-  FormGroupDirective,
-  NgForm,
+  FormGroup,
   Validators,
 } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Observable, Subscription } from 'rxjs';
+import { Section } from 'src/app/shared/models/section.model';
+import { SectionService } from 'src/app/shared/services/section.service';
+import { StudentService } from 'src/app/shared/services/student.service';
+import { Student } from '../students/student.model';
 
 @Component({
   selector: 'app-meetings',
@@ -31,49 +35,55 @@ export class MeetingsComponent implements OnInit {
   }
 }
 
-/** Error when invalid control is dirty, touched, or submitted. */
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
-  ): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(
-      control &&
-      control.invalid &&
-      (control.dirty || control.touched || isSubmitted)
-    );
-  }
-}
-
 @Component({
   selector: 'app-meetings-create',
   templateUrl: 'meetings-create.component.html',
 })
-export class MeetingsCreateDialogComponent {
-  public filteredOptions!: any;
+export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
+  public students$!: Observable<Student[]>;
+  public sections$!: Observable<Section[]>;
+
+  private studentSub: Subscription = new Subscription();
+  private sectionSub: Subscription = new Subscription();
+
+  public createMeetingForm: FormGroup;
+
+  public selectedSectionId!: number;
 
   constructor(
-    public dialogRef: MatDialogRef<MeetingsCreateDialogComponent> // @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
+    public dialogRef: MatDialogRef<MeetingsCreateDialogComponent>,
+    private fb: FormBuilder,
+    private studentService: StudentService,
+    private sectionService: SectionService // @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {
+    this.createMeetingForm = this.fb.group({
+      title: [null, [Validators.required, Validators.maxLength(50)]],
+      courseId: [null, [Validators.required]],
+      instructorId: [null, [Validators.required]],
+      startAt: [null, [Validators.required]],
+      endAt: [null, [Validators.required]],
+      description: [null, [Validators.maxLength(500)]],
+      //traineesId
+    });
+  }
 
-  selected = new FormControl('valid', [
-    Validators.required,
-    Validators.pattern('valid'),
-  ]);
+  ngOnInit(): void {
+    this.students$ = this.studentService.getStudents$();
+    this.sections$ = this.sectionService.getSections$();
+  }
 
-  selectFormControl = new FormControl('valid', [
-    Validators.required,
-    Validators.pattern('valid'),
-  ]);
+  public selectedSection = new FormControl(null, [Validators.required]);
 
-  nativeSelectFormControl = new FormControl('valid', [
-    Validators.required,
-    Validators.pattern('valid'),
-  ]);
+  public onSubmit() {
+    console.log(this.createMeetingForm);
+  }
 
-  matcher = new MyErrorStateMatcher();
-  onClickCancel(): void {
+  public onClickCancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.studentSub.unsubscribe();
+    this.sectionSub.unsubscribe();
   }
 }

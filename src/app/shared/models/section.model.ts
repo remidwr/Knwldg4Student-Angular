@@ -7,7 +7,7 @@ export interface SectionsVm {
 export interface Section {
   id: number;
   title: string;
-  courses: Course[] | MatTableDataSource<Course>;
+  courses: Course[];
 }
 
 export interface Course {

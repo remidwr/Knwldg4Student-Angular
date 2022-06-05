@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Subject, Subscription } from 'rxjs';
+import { map, Observable, Subject, Subscription } from 'rxjs';
 import { environment as env } from 'src/environments/environment';
 import { Course, Section, SectionsVm } from '../models/section.model';
 
@@ -19,6 +19,20 @@ export class SectionService {
   public getSections(): Section[] {
     this.getSectionsFromApi();
     return this.sections;
+  }
+
+  public getSections$(): Observable<Section[]> {
+    return this.http.get<SectionsVm>(`${this.API_URL}/api/v1/sections`).pipe(
+      map((responseData) => {
+        let sections: Section[] = [];
+
+        responseData.sections.forEach((section) => {
+          sections.push(section);
+        });
+
+        return sections;
+      })
+    );
   }
 
   public setSections(sections: Section[]) {
