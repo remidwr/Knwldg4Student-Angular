@@ -8,3 +8,20 @@
     <mat-icon>add</mat-icon>
   </button>
 </div>
+<mat-list role="list">
+  <div *ngFor="let meeting of meetings$ | async">
+    <mat-list-item role="listitem">
+      <h3 matLine>
+        <strong>{{ meeting.title }}</strong> - {{ meeting.courseName }}
+      </h3>
+      <p matLine>
+        <span>
+          {{ meeting.startAt | date: "short" }} -
+          {{ meeting.endAt | date: "short" }}
+        </span>
+        <span class="demo-2"> -- {{ meeting.statusName }} </span>
+      </p>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+  </div>
+</mat-list>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Subject, tap } from 'rxjs';
 import {
   Rating,
   StudentDetailed,
@@ -22,16 +22,6 @@ export class StudentService {
   public error = new Subject<string>();
 
   constructor(private http: HttpClient) {}
-  // public getStudents(): Student[] {
-  //   this.getStudentsFromApi();
-  //   return this.students;
-  // }
-
-  // public setStudents(students: Student[]) {
-  //   this.students = students;
-
-  //   this.studentsChanged.next(this.students);
-  // }
 
   public getStudents$(): Observable<Student[]> {
     return this.http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
@@ -39,6 +29,20 @@ export class StudentService {
         this.students = studentVm.students;
 
         return this.students;
+      })
+    );
+  }
+
+  public searchStudents$(filter: string): Observable<Student[]> {
+    return this.http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
+      map((response: StudentsVm) => {
+        let results = response.students.filter((student) => {
+          let fullName = `${student.firstName} ${student.lastName}`;
+
+          return fullName.includes(filter);
+        });
+
+        return results;
       })
     );
   }

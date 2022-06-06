@@ -22,7 +22,10 @@ export const environment = {
     errorPath,
   },
   httpInterceptor: {
-    allowedList: [`${audience}/api/v1/students/*`],
+    allowedList: [
+      `${audience}/api/v1/students/*`,
+      `${audience}/api/v1/meetings`,
+    ],
   },
 };
 

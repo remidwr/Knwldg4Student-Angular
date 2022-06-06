@@ -1,3 +1,16 @@
+export interface MeetingsVm {
+  meetings: Meeting[];
+}
+
+export interface Meeting {
+  id: number;
+  title: string;
+  startAt: string;
+  endAt: string;
+  courseName: string;
+  statusName: string;
+}
+
 export interface MeetingCreationInput {
   title: string;
   courseId: number;
@@ -5,5 +18,15 @@ export interface MeetingCreationInput {
   startAt: string;
   endAt: string;
   description: string;
-  traineeIds: number[];
+}
+
+export class MeetingCreationInput {
+  constructor(
+    public title: string,
+    public courseId: number,
+    public instructorId: number,
+    public startAt: string,
+    public endAt: string,
+    public description: string
+  ) {}
 }

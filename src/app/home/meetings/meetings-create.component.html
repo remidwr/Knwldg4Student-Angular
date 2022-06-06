@@ -20,7 +20,7 @@
             >
               <mat-option
                 *ngFor="let course of section.courses"
-                [value]="section.id"
+                [value]="course.id"
                 >{{ course.label }}</mat-option
               >
             </mat-optgroup>
@@ -46,9 +46,13 @@
             formControlName="instructorId"
             [matAutocomplete]="auto"
           />
-          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-autocomplete
+            autoActiveFirstOption
+            #auto="matAutocomplete"
+            [displayWith]="displayInstructorFullName.bind(this)"
+          >
             <mat-option
-              *ngFor="let student of students$ | async"
+              *ngFor="let student of filteredInstructors"
               [value]="student.id"
             >
               {{ student.firstName }} {{ student.lastName }}
@@ -57,17 +61,63 @@
         </mat-form-field>
       </div>
 
+      <!-- TRAINEES -->
+      <!-- <mat-form-field appearance="outline">
+        <mat-label>Stagiaires</mat-label>
+        <mat-chip-list #chipList aria-label="Stagiaires">
+          <mat-chip
+            *ngFor="let trainee of trainees; let i = index"
+            (removed)="remove(i)"
+          >
+            {{ trainee.firstName }} {{ trainee.lastName }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input
+            placeholder="Nouveau stagiaire..."
+            #traineeInput
+            formArrayName="traineeIds"
+            [matAutocomplete]="auto"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="add($event)"
+          />
+        </mat-chip-list>
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="selected($event)"
+        >
+          <mat-option
+            *ngFor="let trainee of filteredTrainees"
+            [value]="trainee"
+          >
+            {{ trainee.firstName }} {{ trainee.lastName }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field> -->
+
       <!-- START DATE -->
       <div class="col-6">
         <mat-form-field appearance="outline" class="w-100">
-          <input matInput type="datetime-local" placeholder="start date" />
+          <input
+            matInput
+            type="datetime-local"
+            formControlName="startAt"
+            placeholder="start date"
+          />
         </mat-form-field>
       </div>
 
       <!-- END DATE -->
       <div class="col-6">
         <mat-form-field appearance="outline" class="w-100">
-          <input matInput type="datetime-local" placeholder="end date" />
+          <input
+            matInput
+            type="datetime-local"
+            formControlName="endAt"
+            placeholder="end date"
+          />
         </mat-form-field>
       </div>
 
