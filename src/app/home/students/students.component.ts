@@ -28,26 +28,14 @@ export class StudentsComponent implements AfterViewInit {
   public isLoadingResults = false;
   public isRateLimitReached = false;
 
-  constructor(
-    private studentService: StudentService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
+  constructor(private _studentService: StudentService) {
     this.dataSource = new StudentDataSource();
   }
 
   ngOnInit(): void {
-    // this.subscription = this.studentService.studentsChanged.subscribe(
-    //   (students: Student[]) => {
-    //     this.isLoadingResults = false;
-    //     this.resultsLength = students.length;
-    //     this.table.dataSource = students;
-    //   }
-    // );
-
     this.isLoadingResults = true;
 
-    this.subscription = this.studentService.getStudents$().subscribe({
+    this.subscription = this._studentService.getStudents$().subscribe({
       next: (students) => {
         this.isLoadingResults = false;
         this.students = students;
@@ -56,8 +44,6 @@ export class StudentsComponent implements AfterViewInit {
       },
       error: (err) => {},
     });
-
-    // this.students = this.studentService.getStudents();
   }
 
   ngAfterViewInit(): void {

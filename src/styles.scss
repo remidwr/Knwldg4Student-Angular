@@ -36,3 +36,7 @@ $Knwldg4Student-theme: mat.define-light-theme((
 /* You can add global styles to this file, and also import other style files */
 html, body { margin: 0; height: 100%; }
 body { font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.primary-color-snackbar {
+  background: #3f51b5;
+}

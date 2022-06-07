@@ -12,13 +12,16 @@
   <div *ngFor="let meeting of meetings$ | async">
     <mat-list-item role="listitem">
       <h3 matLine>
-        <strong>{{ meeting.title }}</strong> - {{ meeting.courseName }}
+        <span id="title">{{ meeting.title }}</span> -
+        <span id="course">{{ meeting.courseName }}</span>
       </h3>
       <p matLine>
-        <span>
-          {{ meeting.startAt | date: "short" }} -
-          {{ meeting.endAt | date: "short" }}
-        </span>
+        <span id="from">{{
+          meeting.startAt | date: "short":"+0200":"fr"
+        }}</span>
+        --
+        <span id="to">{{ meeting.endAt | date: "short":"+0200":"fr" }}</span>
+
         <span class="demo-2"> -- {{ meeting.statusName }} </span>
       </p>
     </mat-list-item>

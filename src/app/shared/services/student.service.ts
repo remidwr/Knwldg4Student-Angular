@@ -15,26 +15,26 @@ import { Student, StudentsVm } from '../../home/students/student.model';
 })
 export class StudentService {
   private API_URL = env.API_URL;
-  public studentsChanged = new Subject<Student[]>();
-  public studentDetailedChanged = new Subject<StudentDetailed>();
-  private students: Student[] = [];
-  private studentDetailed!: StudentDetailed;
+  public studentsChanged$ = new Subject<Student[]>();
+  public studentDetailedChanged$ = new Subject<StudentDetailed>();
+  private _students: Student[] = [];
+  private _studentDetailed!: StudentDetailed;
   public error = new Subject<string>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   public getStudents$(): Observable<Student[]> {
-    return this.http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
+    return this._http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
       map((studentVm) => {
-        this.students = studentVm.students;
+        this._students = studentVm.students;
 
-        return this.students;
+        return this._students;
       })
     );
   }
 
   public searchStudents$(filter: string): Observable<Student[]> {
-    return this.http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
+    return this._http.get<StudentsVm>(`${this.API_URL}/api/v1/students`).pipe(
       map((response: StudentsVm) => {
         let results = response.students.filter((student) => {
           let fullName = `${student.firstName} ${student.lastName}`;
@@ -47,13 +47,13 @@ export class StudentService {
     );
   }
 
-  public getDetailedStudent(id: string) {
+  public getDetailedStudent(id: string): StudentDetailed {
     this.getStudentByIdFromApi(id);
-    return this.studentDetailed;
+    return this._studentDetailed;
   }
 
   public getStudentRatings$(id: string): Observable<Rating[]> {
-    return this.http
+    return this._http
       .get<StudentDetailed>(`${this.API_URL}/api/v1/students/${id}`)
       .pipe(
         map((student) => {
@@ -62,20 +62,20 @@ export class StudentService {
       );
   }
 
-  public setDetailedStudent(student: StudentDetailed) {
-    this.studentDetailed = student;
+  public setDetailedStudent(student: StudentDetailed): void {
+    this._studentDetailed = student;
 
-    this.studentDetailedChanged.next(this.studentDetailed);
+    this.studentDetailedChanged$.next(this._studentDetailed);
   }
 
-  private getStudentByIdFromApi(id: string) {
-    this.http
+  private getStudentByIdFromApi(id: string): void {
+    this._http
       .get<StudentDetailed>(`${this.API_URL}/api/v1/students/${id}`)
       .pipe(
         map((student) => {
-          this.studentDetailed = student;
+          this._studentDetailed = student;
 
-          return this.studentDetailed;
+          return this._studentDetailed;
         })
       )
       .subscribe({
@@ -90,15 +90,15 @@ export class StudentService {
       });
   }
 
-  public createStudent(input: StudentInput): Observable<unknown> {
-    return this.http.post(`${this.API_URL}/api/v1/students`, input);
+  public createStudent$(input: StudentInput): Observable<unknown> {
+    return this._http.post(`${this.API_URL}/api/v1/students`, input);
   }
 
-  public updateStudentProfile(
+  public updateStudentProfile$(
     studentId: number,
     studentInput: StudentEditionInput
   ): Observable<unknown> {
-    return this.http.put(
+    return this._http.put(
       `${this.API_URL}/api/v1/students/${studentId}`,
       studentInput
     );

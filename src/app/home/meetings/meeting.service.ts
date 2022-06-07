@@ -9,21 +9,21 @@ import { Meeting, MeetingCreationInput, MeetingsVm } from './meeting.model';
 })
 export class MeetingService {
   private API_URL = env.API_URL;
-  private meetings: Meeting[] = [];
+  private _meetings: Meeting[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   public getMeetings$(): Observable<Meeting[]> {
-    return this.http.get<MeetingsVm>(`${this.API_URL}/api/v1/meetings`).pipe(
+    return this._http.get<MeetingsVm>(`${this.API_URL}/api/v1/meetings`).pipe(
       map((meetingVm) => {
-        this.meetings = meetingVm.meetings;
+        this._meetings = meetingVm.meetings;
 
-        return this.meetings;
+        return this._meetings;
       })
     );
   }
 
   public createMeeting$(input: MeetingCreationInput): Observable<unknown> {
-    return this.http.post(`${this.API_URL}/api/v1/meetings`, input);
+    return this._http.post(`${this.API_URL}/api/v1/meetings`, input);
   }
 }

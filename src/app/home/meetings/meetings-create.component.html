@@ -6,6 +6,16 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Titre</mat-label>
           <input matInput formControlName="title" />
+          <mat-error
+            *ngIf="createMeetingForm.controls['title'].hasError('required')"
+          >
+            Le titre est <strong>requis</strong>
+          </mat-error>
+          <mat-error
+            *ngIf="createMeetingForm.controls['title'].hasError('maxlength')"
+          >
+            Le titre ne peut dépasser 50 caractères
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -25,12 +35,10 @@
               >
             </mat-optgroup>
           </mat-select>
-          <mat-error *ngIf="selectedSection.hasError('required')"
+          <mat-error
+            *ngIf="createMeetingForm.controls['courseId'].hasError('required')"
             >Vous devez sélectionner un cours</mat-error
           >
-          <mat-error *ngIf="!selectedSection.hasError('required')">
-            Votre sélection est incorrecte
-          </mat-error>
         </mat-form-field>
       </div>
 
@@ -58,6 +66,13 @@
               {{ student.firstName }} {{ student.lastName }}
             </mat-option>
           </mat-autocomplete>
+          <mat-error
+            *ngIf="
+              createMeetingForm.controls['instructorId'].hasError('required')
+            "
+          >
+            L'instructeur est <strong>requis</strong>
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -106,6 +121,11 @@
             formControlName="startAt"
             placeholder="start date"
           />
+          <mat-error
+            *ngIf="createMeetingForm.controls['title'].hasError('required')"
+          >
+            Vous devez choisir une date de début
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -118,6 +138,11 @@
             formControlName="endAt"
             placeholder="end date"
           />
+          <mat-error
+            *ngIf="createMeetingForm.controls['title'].hasError('required')"
+          >
+            Vous devez choisir une date de fin
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -126,6 +151,13 @@
         <mat-form-field class="w-100" appearance="outline">
           <mat-label>Description</mat-label>
           <textarea matInput formControlName="description"></textarea>
+          <mat-error
+            *ngIf="
+              createMeetingForm.controls['description'].hasError('maxlength')
+            "
+          >
+            La description ne peut dépasser 500 caractères
+          </mat-error>
         </mat-form-field>
       </div>
     </div>

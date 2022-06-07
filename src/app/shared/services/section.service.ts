@@ -9,20 +9,20 @@ import { Course, Section, SectionsVm } from '../models/section.model';
 })
 export class SectionService {
   private API_URL = env.API_URL;
-  public sectionsChanged = new Subject<Section[]>();
-  public coursesChanged = new Subject<Course[]>();
-  private sections: Section[] = [];
-  private courses: Course[] = [];
+  public sectionsChanged$ = new Subject<Section[]>();
+  public coursesChanged$ = new Subject<Course[]>();
+  private _sections: Section[] = [];
+  private _courses: Course[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   public getSections(): Section[] {
     this.getSectionsFromApi();
-    return this.sections;
+    return this._sections;
   }
 
   public getSections$(): Observable<Section[]> {
-    return this.http.get<SectionsVm>(`${this.API_URL}/api/v1/sections`).pipe(
+    return this._http.get<SectionsVm>(`${this.API_URL}/api/v1/sections`).pipe(
       map((responseData) => {
         let sections: Section[] = [];
 
@@ -35,20 +35,20 @@ export class SectionService {
     );
   }
 
-  public setSections(sections: Section[]) {
-    this.sections = sections;
+  public setSections(sections: Section[]): void {
+    this._sections = sections;
 
-    this.sectionsChanged.next(this.sections);
+    this.sectionsChanged$.next(this._sections);
   }
 
-  private getSectionsFromApi() {
-    this.http
+  private getSectionsFromApi(): void {
+    this._http
       .get<SectionsVm>(`${this.API_URL}/api/v1/sections`)
       .pipe(
         map((responseData) => {
-          this.sections = responseData.sections;
+          this._sections = responseData.sections;
 
-          return this.sections;
+          return this._sections;
         })
       )
       .subscribe((sections) => {
@@ -58,23 +58,23 @@ export class SectionService {
 
   public getCoursesBySectionId(id: number): Course[] {
     this.getCoursesBySectionIdFromApi(id);
-    return this.courses;
+    return this._courses;
   }
 
-  public setCourses(courses: Course[]) {
-    this.courses = courses;
+  public setCourses(courses: Course[]): void {
+    this._courses = courses;
 
-    this.coursesChanged.next(this.courses);
+    this.coursesChanged$.next(this._courses);
   }
 
-  private getCoursesBySectionIdFromApi(id: number) {
-    this.http
+  private getCoursesBySectionIdFromApi(id: number): void {
+    this._http
       .get<Course[]>(`${this.API_URL}/api/v1/sections/${id}/courses`)
       .pipe(
         map((responseData) => {
-          this.courses = responseData;
+          this._courses = responseData;
 
-          return this.courses;
+          return this._courses;
         })
       )
       .subscribe((courses) => {

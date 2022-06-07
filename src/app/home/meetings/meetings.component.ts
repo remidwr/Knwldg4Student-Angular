@@ -1,12 +1,5 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -21,6 +14,7 @@ import { Student } from '../students/student.model';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MeetingService } from './meeting.service';
 import { Meeting, MeetingCreationInput } from './meeting.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-meetings',
@@ -44,12 +38,10 @@ export class MeetingsComponent implements OnInit {
   public openDialog(): void {
     const dialogRef = this.dialog.open(MeetingsCreateDialogComponent, {
       width: '50vw',
-      // data: {name: this.name, animal: this.animal},
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
-      // this.animal = result;
     });
   }
 }
@@ -70,19 +62,20 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   public filteredTrainees: Student[] = [];
   public sections$!: Observable<Section[]>;
 
-  private studentSub = new Subscription();
-  private filteredInstructorSub: Subscription | undefined = new Subscription();
-  private filteredTraineeSub: Subscription | undefined = new Subscription();
-  private sectionSub = new Subscription();
+  private _studentSub = new Subscription();
+  private _filteredInstructorSub: Subscription | undefined = new Subscription();
+  private _filteredTraineeSub: Subscription | undefined = new Subscription();
+  private _sectionSub = new Subscription();
 
   constructor(
-    public dialogRef: MatDialogRef<MeetingsCreateDialogComponent>,
-    private fb: FormBuilder,
-    private studentService: StudentService,
-    private sectionService: SectionService,
-    private meetingService: MeetingService
+    private _dialogRef: MatDialogRef<MeetingsCreateDialogComponent>,
+    private _snackBar: MatSnackBar,
+    private _fb: FormBuilder,
+    private _studentService: StudentService,
+    private _sectionService: SectionService,
+    private _meetingService: MeetingService
   ) {
-    this.createMeetingForm = this.fb.group({
+    this.createMeetingForm = this._fb.group({
       title: [null, [Validators.required, Validators.maxLength(50)]],
       courseId: [null, [Validators.required]],
       instructorId: [null, [Validators.required]],
@@ -94,14 +87,14 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.students$ = this.studentService.getStudents$();
-    this.sections$ = this.sectionService.getSections$();
+    this.students$ = this._studentService.getStudents$();
+    this.sections$ = this._sectionService.getSections$();
 
-    this.filteredInstructorSub = this.createMeetingForm
+    this._filteredInstructorSub = this.createMeetingForm
       .get('instructorId')
       ?.valueChanges.pipe(
         startWith(''),
-        switchMap((value) => this.studentService.searchStudents$(value))
+        switchMap((value) => this._studentService.searchStudents$(value))
       )
       .subscribe((students) => {
         this.filteredInstructors = students;
@@ -134,19 +127,24 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
       this.createMeetingForm.value['description']
     );
 
-    this.meetingService
-      .createMeeting$(meeting)
-      .subscribe(() => this.dialogRef.close());
+    this._meetingService.createMeeting$(meeting).subscribe(() => {
+      this._snackBar.open('Création du meeting réussie', '', {
+        duration: 3000,
+        panelClass: ['primary-color-snackbar'],
+        horizontalPosition: 'end',
+      });
+      this._dialogRef.close();
+    });
   }
 
   public onClickCancel(): void {
-    this.dialogRef.close();
+    this._dialogRef.close();
   }
 
   ngOnDestroy(): void {
-    this.studentSub.unsubscribe();
-    this.sectionSub.unsubscribe();
-    this.filteredInstructorSub?.unsubscribe();
-    this.filteredTraineeSub?.unsubscribe();
+    this._studentSub.unsubscribe();
+    this._sectionSub.unsubscribe();
+    this._filteredInstructorSub?.unsubscribe();
+    this._filteredTraineeSub?.unsubscribe();
   }
 }

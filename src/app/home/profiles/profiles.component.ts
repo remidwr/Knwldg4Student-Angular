@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable, Subscription } from 'rxjs';
 import { StudentService } from 'src/app/shared/services/student.service';
@@ -12,11 +13,11 @@ import { Rating, StudentDetailed, StudentEditionInput } from './profile.model';
   styleUrls: ['./profiles.component.scss'],
 })
 export class ProfilesComponent implements OnInit, OnDestroy {
-  private studentSub: Subscription = new Subscription();
-  private updateStudentSub: Subscription = new Subscription();
-  private authSub: Subscription = new Subscription();
+  private _studentSub: Subscription = new Subscription();
+  private _updateStudentSub: Subscription = new Subscription();
+  private _authSub: Subscription = new Subscription();
   public detailedStudent!: StudentDetailed;
-  private userId!: string;
+  private _userId!: string;
   public profileForm: FormGroup;
   public error: any = null;
 
@@ -24,13 +25,14 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   public ratings$!: Observable<Rating[]>;
 
   constructor(
-    private fb: FormBuilder,
-    public auth: AuthService,
-    public studentService: StudentService
+    private _snackBar: MatSnackBar,
+    private _fb: FormBuilder,
+    private _auth: AuthService,
+    private _studentService: StudentService
   ) {
     this.selectedDate = new Date();
 
-    this.profileForm = this.fb.group({
+    this.profileForm = this._fb.group({
       id: [null, [Validators.required]],
       firstName: [null, [Validators.maxLength(50)]],
       lastName: [null, [Validators.maxLength(50)]],
@@ -39,11 +41,11 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.studentService.error.subscribe((errorMessage) => {
+    this._studentService.error.subscribe((errorMessage) => {
       this.error = errorMessage;
     });
 
-    this.studentService.studentDetailedChanged.subscribe(
+    this._studentService.studentDetailedChanged$.subscribe(
       (student: StudentDetailed) => {
         this.detailedStudent = student;
         this.profileForm.get('firstName')?.patchValue(student.firstName);
@@ -52,15 +54,15 @@ export class ProfilesComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.authSub = this.auth.getUser().subscribe((user) => {
-      this.userId = user?.sub as string;
+    this._authSub = this._auth.getUser().subscribe((user) => {
+      this._userId = user?.sub as string;
 
-      console.log(this.userId);
-      this.detailedStudent = this.studentService.getDetailedStudent(
-        this.userId
+      console.log(this._userId);
+      this.detailedStudent = this._studentService.getDetailedStudent(
+        this._userId
       );
 
-      this.ratings$ = this.studentService.getStudentRatings$(this.userId);
+      this.ratings$ = this._studentService.getStudentRatings$(this._userId);
     });
   }
 
@@ -73,14 +75,20 @@ export class ProfilesComponent implements OnInit, OnDestroy {
       this.profileForm.get('description')?.value
     );
 
-    this.updateStudentSub = this.studentService
-      .updateStudentProfile(id, studentInput)
-      .subscribe();
+    this._updateStudentSub = this._studentService
+      .updateStudentProfile$(id, studentInput)
+      .subscribe(() => {
+        this._snackBar.open('Votre profile a été mis à jour avec succès', '', {
+          duration: 3000,
+          panelClass: ['primary-color-snackbar'],
+          horizontalPosition: 'end',
+        });
+      });
   }
 
   ngOnDestroy(): void {
-    this.studentSub.unsubscribe();
-    this.updateStudentSub.unsubscribe();
-    this.authSub.unsubscribe();
+    this._studentSub.unsubscribe();
+    this._updateStudentSub.unsubscribe();
+    this._authSub.unsubscribe();
   }
 }

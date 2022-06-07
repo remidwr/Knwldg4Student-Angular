@@ -22,6 +22,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [],
@@ -50,6 +51,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatDialogModule,
     MatAutocompleteModule,
     MatChipsModule,
+    MatSnackBarModule,
   ],
   exports: [
     MatNativeDateModule,
@@ -74,6 +76,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatDialogModule,
     MatAutocompleteModule,
     MatChipsModule,
+    MatSnackBarModule,
   ],
 })
 export class AppMaterialModule {}
