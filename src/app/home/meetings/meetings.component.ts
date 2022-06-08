@@ -21,17 +21,37 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './meetings.component.html',
   styleUrls: ['./meetings.component.scss'],
 })
-export class MeetingsComponent implements OnInit {
-  public meetings$ = new Subject<Meeting[]>();
+export class MeetingsComponent implements OnInit, OnDestroy {
+  public meetings$: Subject<Meeting[]>;
+
+  private _meetingAddedSubscription: Subscription;
 
   constructor(
     public dialog: MatDialog,
     private meetingService: MeetingService
-  ) {}
+  ) {
+    this.meetings$ = new Subject<Meeting[]>();
+    this._meetingAddedSubscription = new Subscription();
+  }
 
   ngOnInit(): void {
+    this.initMeetingAddedSubscription();
+  }
+
+  private initMeetingAddedSubscription(): void {
+    this._meetingAddedSubscription =
+      this.meetingService.meetingAdded$.subscribe((data: boolean) => {
+        if (data) {
+          this.meetingService.getMeetings$().subscribe((meetings) => {
+            this.meetings$.next(meetings);
+          });
+        }
+      });
+
     this.meetingService.getMeetings$().subscribe((meetings) => {
-      this.meetings$.next(meetings);
+      if (meetings) {
+        this.meetings$.next(meetings);
+      }
     });
   }
 
@@ -44,6 +64,11 @@ export class MeetingsComponent implements OnInit {
       console.log('The dialog was closed');
     });
   }
+
+  ngOnDestroy(): void {
+    this._meetingAddedSubscription.unsubscribe();
+    this.meetings$.unsubscribe();
+  }
 }
 
 @Component({
@@ -53,7 +78,6 @@ export class MeetingsComponent implements OnInit {
 export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   public createMeetingForm: FormGroup;
   public selectedSectionId!: number;
-  public separatorKeysCodes: number[] = [ENTER, COMMA];
 
   public students$!: Observable<Student[]>;
   public filteredInstructors!: Student[];
@@ -63,7 +87,8 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   public sections$!: Observable<Section[]>;
 
   private _studentSub = new Subscription();
-  private _filteredInstructorSub: Subscription | undefined = new Subscription();
+  private _filteredInstructorSubscription: Subscription | undefined =
+    new Subscription();
   private _filteredTraineeSub: Subscription | undefined = new Subscription();
   private _sectionSub = new Subscription();
 
@@ -87,10 +112,14 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.initCreationMeeting();
+  }
+
+  private initCreationMeeting() {
     this.students$ = this._studentService.getStudents$();
     this.sections$ = this._sectionService.getSections$();
 
-    this._filteredInstructorSub = this.createMeetingForm
+    this._filteredInstructorSubscription = this.createMeetingForm
       .get('instructorId')
       ?.valueChanges.pipe(
         startWith(''),
@@ -128,11 +157,14 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
     );
 
     this._meetingService.createMeeting$(meeting).subscribe(() => {
+      this._meetingService.meetingAdded$.next(true);
+
       this._snackBar.open('Création du meeting réussie', '', {
         duration: 3000,
         panelClass: ['primary-color-snackbar'],
         horizontalPosition: 'end',
       });
+
       this._dialogRef.close();
     });
   }
@@ -144,7 +176,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._studentSub.unsubscribe();
     this._sectionSub.unsubscribe();
-    this._filteredInstructorSub?.unsubscribe();
+    this._filteredInstructorSubscription?.unsubscribe();
     this._filteredTraineeSub?.unsubscribe();
   }
 }
