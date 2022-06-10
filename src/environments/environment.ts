@@ -23,7 +23,7 @@ export const environment = {
   },
   httpInterceptor: {
     allowedList: [
-      `${audience}/api/v1/students/*`,
+      `${audience}/api/v1/students*`,
       `${audience}/api/v1/meetings`,
     ],
   },

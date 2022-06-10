@@ -48,8 +48,6 @@ registerLocaleData(localeFr, 'fr');
   ],
   imports: [
     CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     NoopAnimationsModule,
     FlexLayoutModule,
     FormsModule,

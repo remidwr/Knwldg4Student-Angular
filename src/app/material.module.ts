@@ -23,10 +23,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [],
   imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
     CommonModule,
     MatNativeDateModule,
     MatButtonModule,
@@ -54,6 +58,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatSnackBarModule,
   ],
   exports: [
+    BrowserModule,
+    BrowserAnimationsModule,
     MatNativeDateModule,
     MatButtonModule,
     MatSidenavModule,

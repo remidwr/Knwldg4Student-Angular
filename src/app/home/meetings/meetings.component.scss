@@ -23,3 +23,9 @@ mat-progress-spinner {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
+.custom-create-button {
+  z-index: 5;
+  position : fixed;
+  right: 15px;
+}

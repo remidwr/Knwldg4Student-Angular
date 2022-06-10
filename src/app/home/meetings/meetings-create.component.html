@@ -173,7 +173,12 @@
     </div>
   </div>
   <div mat-dialog-actions class="d-flex justify-content-end">
-    <button mat-raised-button color="warn" (click)="onClickCancel()">
+    <button
+      mat-raised-button
+      color="warn"
+      type="button"
+      (click)="onClickCancel()"
+    >
       Annuler
     </button>
     <button mat-raised-button color="primary" cdkFocusInitial type="submit">

@@ -12,9 +12,11 @@
   </div>
   <div fxFlex fxLayout fxLayoutAlign="space-between center" fxHide.xs>
     <ul fxLayout fxLayoutGap="10px" class="navigation-items">
-      <li>
-        <button mat-button routerLink="/students">Formateurs</button>
-      </li>
+      <ng-container *ngIf="auth.isAuthenticated$ | async">
+        <li>
+          <button mat-button routerLink="/students">Formateurs</button>
+        </li>
+      </ng-container>
       <ng-container *ngIf="auth.isAuthenticated$ | async">
         <li>
           <button mat-button routerLink="/meetings">Meetings</button>

@@ -185,7 +185,6 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
 
   public onSubmit(): void {
     this._loader.show();
-    console.log(this.createMeetingForm.value);
 
     this._meetingService
       .createMeeting$(this.createMeetingForm.value)
