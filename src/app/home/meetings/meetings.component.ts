@@ -24,7 +24,9 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 
   public loading$ = this._loader.loading$;
 
-  private _meetingAddedSubscription: Subscription;
+  private _meetingAddedSub = new Subscription();
+  private _meetingSub = new Subscription();
+  private _dialogSub = new Subscription();
 
   constructor(
     public dialog: MatDialog,
@@ -33,7 +35,6 @@ export class MeetingsComponent implements OnInit, OnDestroy {
   ) {
     this.meetings = [];
     this.now = new Date();
-    this._meetingAddedSubscription = new Subscription();
   }
 
   ngOnInit(): void {
@@ -42,30 +43,35 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 
   private initMeetingAddedSubscription(): void {
     this._loader.show();
-    this._meetingAddedSubscription =
-      this.meetingService.meetingAdded$.subscribe((data: boolean) => {
+    this._meetingAddedSub = this.meetingService.meetingAdded$.subscribe(
+      (data: boolean) => {
         if (data) {
-          this.meetingService.getMeetings$().subscribe((meetings) => {
-            if (meetings) {
-              this._loader.hide();
-              this.meetings = meetings.filter(
-                (m) =>
-                  m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
-              );
-            }
-          });
+          this._meetingSub = this.meetingService
+            .getMeetings$()
+            .subscribe((meetings) => {
+              if (meetings) {
+                this._loader.hide();
+                this.meetings = meetings.filter(
+                  (m) =>
+                    m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
+                );
+              }
+            });
         }
         this._loader.hide();
-      });
-
-    this.meetingService.getMeetings$().subscribe((meetings) => {
-      this._loader.hide();
-      if (meetings) {
-        this.meetings = meetings.filter(
-          (m) => m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
-        );
       }
-    });
+    );
+
+    this._meetingSub = this.meetingService
+      .getMeetings$()
+      .subscribe((meetings) => {
+        this._loader.hide();
+        if (meetings) {
+          this.meetings = meetings.filter(
+            (m) => m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
+          );
+        }
+      });
   }
 
   public openDialog(): void {
@@ -74,14 +80,16 @@ export class MeetingsComponent implements OnInit, OnDestroy {
       width: '50vw',
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this._dialogSub = dialogRef.afterClosed().subscribe((result) => {
       this._loader.hide();
       console.log('The dialog was closed');
     });
   }
 
   ngOnDestroy(): void {
-    this._meetingAddedSubscription.unsubscribe();
+    this._meetingAddedSub.unsubscribe();
+    this._meetingSub.unsubscribe();
+    this._dialogSub.unsubscribe();
   }
 }
 
@@ -107,6 +115,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
     new Subscription();
   private _filteredTraineeSub: Subscription | undefined = new Subscription();
   private _sectionSub = new Subscription();
+  private _mettingSub = new Subscription();
 
   public loading$ = this._loader.loading$;
 
@@ -142,7 +151,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
     this.students$ = this._studentService.getStudents$();
     this.sections$ = this._sectionService.getSections$();
 
-    this.sections$.subscribe((sections) => {
+    this._sectionSub = this.sections$.subscribe((sections) => {
       this._loader.hide();
       this.courses = sections.find(
         (s) => s.id === this.selectedSection
@@ -176,7 +185,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
 
   public onSelectedSection(event: MatSelectChange) {
     this._loader.show();
-    this.sections$.subscribe({
+    this._sectionSub = this.sections$.subscribe({
       next: (sections) => {
         this._loader.hide();
         this.courses = sections.find(
@@ -212,7 +221,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   public onSubmit(): void {
     this._loader.show();
 
-    this._meetingService
+    this._mettingSub = this._meetingService
       .createMeeting$(this.createMeetingForm.value)
       .subscribe({
         next: () => {
@@ -246,6 +255,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._mettingSub.unsubscribe();
     this._studentSub.unsubscribe();
     this._sectionSub.unsubscribe();
     this._filteredInstructorSubscription?.unsubscribe();

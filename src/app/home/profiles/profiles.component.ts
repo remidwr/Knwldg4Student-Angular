@@ -21,7 +21,9 @@ import { Rating, StudentDetailed, StudentEditionInput } from './profile.model';
 export class ProfilesComponent implements OnInit, OnDestroy {
   private _studentSub: Subscription = new Subscription();
   private _updateStudentSub: Subscription = new Subscription();
+  private _errorSub = new Subscription();
   private _authSub: Subscription = new Subscription();
+
   public detailedStudent!: StudentDetailed;
   private _userId!: string;
   public profileForm: FormGroup;
@@ -54,11 +56,11 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._loader.show();
 
-    this._studentService.error.subscribe((errorMessage) => {
+    this._errorSub = this._studentService.error.subscribe((errorMessage) => {
       this.error = errorMessage;
     });
 
-    this._studentService.studentDetailedChanged$.subscribe(
+    this._studentSub = this._studentService.studentDetailedChanged$.subscribe(
       (student: StudentDetailed) => {
         this._loader.hide();
         this.detailedStudent = student;
@@ -111,5 +113,6 @@ export class ProfilesComponent implements OnInit, OnDestroy {
     this._studentSub.unsubscribe();
     this._updateStudentSub.unsubscribe();
     this._authSub.unsubscribe();
+    this._errorSub.unsubscribe();
   }
 }
