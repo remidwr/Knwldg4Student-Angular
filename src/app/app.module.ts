@@ -27,6 +27,8 @@ import {
 } from './home/meetings/meetings.component';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { UdemyVideosComponent } from './home/udemy-videos/udemy-videos.component';
+import { NetworkInterceptor } from './shared/interceptors/network.interceptor';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -42,6 +44,7 @@ registerLocaleData(localeFr, 'fr');
     ProfilesComponent,
     MeetingsComponent,
     MeetingsCreateDialogComponent,
+    UdemyVideosComponent,
   ],
   imports: [
     CommonModule,
@@ -66,6 +69,11 @@ registerLocaleData(localeFr, 'fr');
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: NetworkInterceptor,
       multi: true,
     },
   ],

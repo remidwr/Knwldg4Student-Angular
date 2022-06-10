@@ -1,36 +1,83 @@
+<ng-container *ngIf="loading$ | async">
+  <div class="overlay"></div>
+  <mat-progress-spinner [mode]="'indeterminate'"></mat-progress-spinner>
+</ng-container>
+
 <mat-tab-group dynamicHeight>
   <mat-tab label="Profil">
     <form [formGroup]="profileForm" novalidate (ngSubmit)="onSubmit()">
       <div class="profile">
-        <div class="row">
-          <div class="col-6">
-            <mat-form-field class="full-width" appearance="outline">
-              <mat-label>Prénom</mat-label>
-              <input matInput formControlName="firstName" />
-            </mat-form-field>
-          </div>
-
-          <div class="col-6">
-            <mat-form-field class="full-width" appearance="outline">
-              <mat-label>Nom</mat-label>
-              <input matInput formControlName="lastName" />
-            </mat-form-field>
-          </div>
-
-          <div class="col-12">
-            <mat-form-field class="full-width" appearance="outline">
-              <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description"></textarea>
-            </mat-form-field>
+        <div *ngIf="auth.user$ | async as user">
+          <div class="row align-items-center profile-header">
+            <div class="col-md-2 mb-3">
+              <img
+                [src]="user.picture"
+                alt="Photo de profil"
+                class="img-fluid profile-picture"
+              />
+            </div>
+            <div class="col-md-10">
+              <div class="row">
+                <div class="col-md-12">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <mat-label>Adresse email</mat-label>
+                    <input matInput [formControl]="emailFormControl" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <mat-label>Prénom</mat-label>
+                    <input matInput formControlName="firstName" />
+                    <mat-error
+                      *ngIf="
+                        profileForm.controls['firstName'].hasError('maxlength')
+                      "
+                    >
+                      Le prénom ne peut dépasser 50 caractères
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <mat-label>Nom</mat-label>
+                    <input matInput formControlName="lastName" />
+                    <mat-error
+                      *ngIf="
+                        profileForm.controls['lastName'].hasError('maxlength')
+                      "
+                    >
+                      Le nom de famille ne peut dépasser 50 caractères
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-12">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                    <mat-error
+                      *ngIf="
+                        profileForm.controls['description'].hasError(
+                          'maxlength'
+                        )
+                      "
+                    >
+                      La description ne peut dépasser 500 caractères
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="d-flex justify-content-end">
-          <button mat-raised-button color="primary" type="submit">
-            Sauvegarder
-          </button>
-        </div>
+        <!-- <div class="row"> -->
       </div>
+
+      <div class="d-flex justify-content-end">
+        <button mat-raised-button color="primary" type="submit">
+          Sauvegarder
+        </button>
+      </div>
+      <!-- </div> -->
     </form>
   </mat-tab>
 
@@ -65,11 +112,6 @@
       </mat-expansion-panel>
     </div>
   </mat-tab>
-
-  <mat-tab label="Meetings"
-    ><mat-card class="calendar-card-size">
-      <mat-calendar [(selected)]="selectedDate"></mat-calendar> </mat-card
-  ></mat-tab>
 </mat-tab-group>
 
 <ng-template #starOutlined>

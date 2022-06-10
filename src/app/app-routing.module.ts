@@ -6,6 +6,7 @@ import { MeetingsComponent } from './home/meetings/meetings.component';
 import { ProfilesComponent } from './home/profiles/profiles.component';
 import { RegistersComponent } from './home/registers/registers.component';
 import { StudentsComponent } from './home/students/students.component';
+import { UdemyVideosComponent } from './home/udemy-videos/udemy-videos.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -13,6 +14,11 @@ const routes: Routes = [
   { path: 'students', component: StudentsComponent },
   { path: 'profile', component: ProfilesComponent, canActivate: [AuthGuard] },
   { path: 'meetings', component: MeetingsComponent, canActivate: [AuthGuard] },
+  {
+    path: 'online-training',
+    component: UdemyVideosComponent,
+    canActivate: [AuthGuard],
+  },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
 

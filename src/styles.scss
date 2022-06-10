@@ -40,3 +40,17 @@ body { font-family: Roboto, "Helvetica Neue", sans-serif; }
 .primary-color-snackbar {
   background: #3f51b5;
 }
+
+.danger-color-snackbar {
+  background: red;
+}
+
+.overlay {
+  position: absolute;
+  top: 10vh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  backdrop-filter: blur(2px);
+}

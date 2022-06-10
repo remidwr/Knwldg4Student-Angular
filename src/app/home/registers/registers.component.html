@@ -14,6 +14,16 @@
             >
               Le nom d'utilisateur est <strong>requis</strong>
             </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['username'].hasError('minlength')"
+            >
+              Le nom d'utilisateur doit avoir min. 2 caractères
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['username'].hasError('maxlength')"
+            >
+              Le nom d'utilisateur ne peut dépasser 50 caractères
+            </mat-error>
           </mat-form-field>
         </div>
         <div class="col-12">
@@ -29,6 +39,14 @@
               *ngIf="registerForm.controls['email'].hasError('required')"
             >
               L'adresse email est <strong>requis</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['email'].hasError('email')">
+              L'adresse email est invalide
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['email'].hasError('maxlength')"
+            >
+              L'adresse email ne peut dépasser 200 caractères
             </mat-error>
           </mat-form-field>
         </div>
@@ -55,6 +73,16 @@
               *ngIf="registerForm.controls['password'].hasError('required')"
             >
               Le mot de passe est <strong>requis</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('minlength')"
+            >
+              Le mot de passe doit avoir min. 8 caractères
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('maxlength')"
+            >
+              Le mot de passe ne peut dépasser 50 caractères
             </mat-error>
           </mat-form-field>
         </div>

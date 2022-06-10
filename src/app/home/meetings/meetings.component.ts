@@ -1,20 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Observable, startWith, Subject, Subscription, switchMap } from 'rxjs';
+import { Observable, startWith, Subscription, switchMap } from 'rxjs';
 import { Section } from 'src/app/shared/models/section.model';
 import { SectionService } from 'src/app/shared/services/section.service';
 import { StudentService } from 'src/app/shared/services/student.service';
 import { Student } from '../students/student.model';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MeetingService } from './meeting.service';
-import { Meeting, MeetingCreationInput } from './meeting.model';
+import { Meeting } from './meeting.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Course } from '../profiles/profile.model';
+import { MatSelectChange } from '@angular/material/select';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
   selector: 'app-meetings',
@@ -22,15 +19,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./meetings.component.scss'],
 })
 export class MeetingsComponent implements OnInit, OnDestroy {
-  public meetings$: Subject<Meeting[]>;
+  public meetings: Meeting[];
+  private now: Date;
+
+  public loading$ = this._loader.loading$;
 
   private _meetingAddedSubscription: Subscription;
 
   constructor(
     public dialog: MatDialog,
-    private meetingService: MeetingService
+    private meetingService: MeetingService,
+    private _loader: LoadingService
   ) {
-    this.meetings$ = new Subject<Meeting[]>();
+    this.meetings = [];
+    this.now = new Date();
     this._meetingAddedSubscription = new Subscription();
   }
 
@@ -39,35 +41,47 @@ export class MeetingsComponent implements OnInit, OnDestroy {
   }
 
   private initMeetingAddedSubscription(): void {
+    this._loader.show();
     this._meetingAddedSubscription =
       this.meetingService.meetingAdded$.subscribe((data: boolean) => {
         if (data) {
           this.meetingService.getMeetings$().subscribe((meetings) => {
-            this.meetings$.next(meetings);
+            if (meetings) {
+              this._loader.hide();
+              this.meetings = meetings.filter(
+                (m) =>
+                  m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
+              );
+            }
           });
         }
+        this._loader.hide();
       });
 
     this.meetingService.getMeetings$().subscribe((meetings) => {
+      this._loader.hide();
       if (meetings) {
-        this.meetings$.next(meetings);
+        this.meetings = meetings.filter(
+          (m) => m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
+        );
       }
     });
   }
 
   public openDialog(): void {
+    this._loader.show();
     const dialogRef = this.dialog.open(MeetingsCreateDialogComponent, {
       width: '50vw',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      this._loader.hide();
       console.log('The dialog was closed');
     });
   }
 
   ngOnDestroy(): void {
     this._meetingAddedSubscription.unsubscribe();
-    this.meetings$.unsubscribe();
   }
 }
 
@@ -77,7 +91,9 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 })
 export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   public createMeetingForm: FormGroup;
+  public selectedSection: number;
   public selectedSectionId!: number;
+  public courses: Course[] | undefined;
 
   public students$!: Observable<Student[]>;
   public filteredInstructors!: Student[];
@@ -92,14 +108,20 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   private _filteredTraineeSub: Subscription | undefined = new Subscription();
   private _sectionSub = new Subscription();
 
+  public loading$ = this._loader.loading$;
+
   constructor(
     private _dialogRef: MatDialogRef<MeetingsCreateDialogComponent>,
     private _snackBar: MatSnackBar,
     private _fb: FormBuilder,
     private _studentService: StudentService,
     private _sectionService: SectionService,
-    private _meetingService: MeetingService
+    private _meetingService: MeetingService,
+    private _loader: LoadingService
   ) {
+    this.selectedSection = 1;
+    this.courses = [];
+
     this.createMeetingForm = this._fb.group({
       title: [null, [Validators.required, Validators.maxLength(50)]],
       courseId: [null, [Validators.required]],
@@ -116,8 +138,16 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
   }
 
   private initCreationMeeting() {
+    this._loader.show();
     this.students$ = this._studentService.getStudents$();
     this.sections$ = this._sectionService.getSections$();
+
+    this.sections$.subscribe((sections) => {
+      this._loader.hide();
+      this.courses = sections.find(
+        (s) => s.id === this.selectedSection
+      )?.courses;
+    });
 
     this._filteredInstructorSubscription = this.createMeetingForm
       .get('instructorId')
@@ -126,8 +156,19 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
         switchMap((value) => this._studentService.searchStudents$(value))
       )
       .subscribe((students) => {
+        this._loader.hide();
         this.filteredInstructors = students;
       });
+  }
+
+  public onSelectedSection(event: MatSelectChange) {
+    this._loader.show();
+    this.sections$.subscribe((sections) => {
+      this._loader.hide();
+      this.courses = sections.find(
+        (section) => section.id === event.value
+      )?.courses;
+    });
   }
 
   public displayInstructorFullName(studentId: number): string {
@@ -142,31 +183,24 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  public selectedSection = new FormControl(null, [Validators.required]);
-
   public onSubmit(): void {
-    console.log(this.createMeetingForm);
+    this._loader.show();
+    console.log(this.createMeetingForm.value);
 
-    const meeting = new MeetingCreationInput(
-      this.createMeetingForm.value['title'],
-      this.createMeetingForm.value['courseId'],
-      this.createMeetingForm.value['instructorId'],
-      this.createMeetingForm.value['startAt'],
-      this.createMeetingForm.value['endAt'],
-      this.createMeetingForm.value['description']
-    );
+    this._meetingService
+      .createMeeting$(this.createMeetingForm.value)
+      .subscribe(() => {
+        this._loader.hide();
+        this._meetingService.meetingAdded$.next(true);
 
-    this._meetingService.createMeeting$(meeting).subscribe(() => {
-      this._meetingService.meetingAdded$.next(true);
+        this._snackBar.open('Création du meeting réussie', '', {
+          duration: 3000,
+          panelClass: ['primary-color-snackbar'],
+          horizontalPosition: 'end',
+        });
 
-      this._snackBar.open('Création du meeting réussie', '', {
-        duration: 3000,
-        panelClass: ['primary-color-snackbar'],
-        horizontalPosition: 'end',
+        this._dialogRef.close();
       });
-
-      this._dialogRef.close();
-    });
   }
 
   public onClickCancel(): void {

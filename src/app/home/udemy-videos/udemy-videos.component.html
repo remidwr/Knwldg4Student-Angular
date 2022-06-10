@@ -1,0 +1,80 @@
+<div class="grid-container">
+  <form [formGroup]="filterForm" novalidate (ngSubmit)="onSubmit()">
+    <div class="row w-100">
+      <mat-form-field class="col-5" appearance="outline">
+        <mat-label>Rechercher</mat-label>
+        <input
+          matInput
+          placeholder="C#, Angular,..."
+          formControlName="search"
+        />
+      </mat-form-field>
+      <mat-form-field class="col-5" appearance="outline">
+        <mat-label>Trier</mat-label
+        ><mat-select formControlName="ordering">
+          <mat-option
+            *ngFor="let ordering of orderings"
+            [value]="ordering.value"
+          >
+            {{ ordering.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="col-2 mt-2">
+        <button mat-raised-button color="primary">Rechercher/Filter</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="mat-elevation-z8">
+    <ng-container *ngIf="loading$ | async">
+      <div class="overlay"></div>
+      <mat-progress-spinner [mode]="'indeterminate'"></mat-progress-spinner>
+    </ng-container>
+
+    <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Vidéo</th>
+        <td mat-cell *matCellDef="let result">
+          <img
+            [src]="result.image240X135"
+            (click)="redirectToUdemy(result.url)"
+            class="img-thumbnail m-1"
+            alt="Udemy video"
+          />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Titre</th>
+        <td mat-cell *matCellDef="let result">
+          <div class="ps-3" (click)="redirectToUdemy(result.url)">
+            <h2>{{ result.title }}</h2>
+            <p>{{ result.headline }}</p>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      #paginator
+      [length]="resultsLength"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      (page)="getUdemyVideos($event)"
+      aria-label="Select page"
+    >
+    </mat-paginator>
+  </div>
+</div>
+<!-- <div class="row">
+  <div class="col-10">
+    <mat-list *ngFor="let result of udemyVideosChanged$ | async">
+      <mat-list-item>{{ result.title }}</mat-list-item>
+    </mat-list>
+  </div>
+</div> -->

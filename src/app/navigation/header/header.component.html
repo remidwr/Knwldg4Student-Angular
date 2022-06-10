@@ -20,6 +20,13 @@
           <button mat-button routerLink="/meetings">Meetings</button>
         </li>
       </ng-container>
+      <ng-container *ngIf="auth.isAuthenticated$ | async">
+        <li>
+          <button mat-button routerLink="/online-training">
+            Formations en ligne
+          </button>
+        </li>
+      </ng-container>
     </ul>
     <ul fxLayout fxLayoutGap="10px" class="navigation-items">
       <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">

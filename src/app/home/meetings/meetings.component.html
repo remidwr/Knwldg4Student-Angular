@@ -1,3 +1,11 @@
+<ng-container *ngIf="loading$ | async">
+  <div class="overlay"></div>
+  <mat-progress-spinner
+    id="spinner-create-meeting"
+    [mode]="'indeterminate'"
+  ></mat-progress-spinner>
+</ng-container>
+
 <div class="d-flex justify-content-end">
   <button
     mat-fab
@@ -9,7 +17,7 @@
   </button>
 </div>
 <mat-list role="list">
-  <div *ngFor="let meeting of meetings$ | async">
+  <div *ngFor="let meeting of meetings">
     <mat-list-item role="listitem">
       <h3 matLine>
         <span id="title">{{ meeting.title }}</span> -
