@@ -155,19 +155,45 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
         startWith(''),
         switchMap((value) => this._studentService.searchStudents$(value))
       )
-      .subscribe((students) => {
-        this._loader.hide();
-        this.filteredInstructors = students;
+      .subscribe({
+        next: (students) => {
+          this._loader.hide();
+          this.filteredInstructors = students;
+        },
+        error: (err) => {
+          this._snackBar.open(
+            'Erreur lors de la récupération des étudiants: ' + err.error.detail,
+            '',
+            {
+              duration: 3000,
+              panelClass: ['danger-color-snackbar'],
+              horizontalPosition: 'end',
+            }
+          );
+        },
       });
   }
 
   public onSelectedSection(event: MatSelectChange) {
     this._loader.show();
-    this.sections$.subscribe((sections) => {
-      this._loader.hide();
-      this.courses = sections.find(
-        (section) => section.id === event.value
-      )?.courses;
+    this.sections$.subscribe({
+      next: (sections) => {
+        this._loader.hide();
+        this.courses = sections.find(
+          (section) => section.id === event.value
+        )?.courses;
+      },
+      error: (err) => {
+        this._snackBar.open(
+          'Erreur lors de la récupération des sections: ' + err.error.detail,
+          '',
+          {
+            duration: 3000,
+            panelClass: ['danger-color-snackbar'],
+            horizontalPosition: 'end',
+          }
+        );
+      },
     });
   }
 
@@ -188,17 +214,30 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
 
     this._meetingService
       .createMeeting$(this.createMeetingForm.value)
-      .subscribe(() => {
-        this._loader.hide();
-        this._meetingService.meetingAdded$.next(true);
+      .subscribe({
+        next: () => {
+          this._loader.hide();
+          this._meetingService.meetingAdded$.next(true);
 
-        this._snackBar.open('Création du meeting réussie', '', {
-          duration: 3000,
-          panelClass: ['primary-color-snackbar'],
-          horizontalPosition: 'end',
-        });
+          this._snackBar.open('Création du meeting réussie', '', {
+            duration: 3000,
+            panelClass: ['primary-color-snackbar'],
+            horizontalPosition: 'end',
+          });
 
-        this._dialogRef.close();
+          this._dialogRef.close();
+        },
+        error: (err) => {
+          this._snackBar.open(
+            'Erreur lors de la création du meeting: ' + err.error.detail,
+            '',
+            {
+              duration: 3000,
+              panelClass: ['danger-color-snackbar'],
+              horizontalPosition: 'end',
+            }
+          );
+        },
       });
   }
 
