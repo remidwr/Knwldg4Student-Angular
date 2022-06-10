@@ -32,7 +32,7 @@
       <mat-progress-spinner [mode]="'indeterminate'"></mat-progress-spinner>
     </ng-container>
 
-    <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+    <table #table mat-table [dataSource]="dataSource" class="w-100" matSort>
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Vidéo</th>
         <td mat-cell *matCellDef="let result">

@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,6 +22,7 @@ import { Ordering, Result, UdemyCourseList } from './udemy-video.model';
 export class UdemyVideosComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatTable) table!: MatTable<Result>;
+  @ViewChild('table', { read: ElementRef }) tableRef!: ElementRef;
 
   public loading$ = this._loader.loading$;
 
@@ -76,6 +83,10 @@ export class UdemyVideosComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (udemyCourses) => {
           this._loader.hide();
+
+          console.log(this.tableRef);
+
+          this.tableRef.nativeElement.scrollIntoView();
 
           this.udemyCourses = udemyCourses;
           this.udemyCourseResults = udemyCourses.results;
