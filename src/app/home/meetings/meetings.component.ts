@@ -8,10 +8,10 @@ import { StudentService } from 'src/app/shared/services/student.service';
 import { Student } from '../students/student.model';
 import { MeetingService } from './meeting.service';
 import { Meeting } from './meeting.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Course } from '../profiles/profile.model';
 import { MatSelectChange } from '@angular/material/select';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-meetings',
@@ -31,7 +31,8 @@ export class MeetingsComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private meetingService: MeetingService,
-    private _loader: LoadingService
+    private _loader: LoadingService,
+    private _snackBar: SnackbarService
   ) {
     this.meetings = [];
     this.now = new Date();
@@ -43,8 +44,10 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 
   private initMeetingAddedSubscription(): void {
     this._loader.show();
-    this._meetingAddedSub = this.meetingService.meetingAdded$.subscribe(
-      (data: boolean) => {
+    this._meetingAddedSub = this.meetingService.meetingAdded$.subscribe({
+      next: (data: boolean) => {
+        this._loader.hide();
+
         if (data) {
           this._meetingSub = this.meetingService
             .getMeetings$()
@@ -58,31 +61,62 @@ export class MeetingsComponent implements OnInit, OnDestroy {
               }
             });
         }
-        this._loader.hide();
-      }
-    );
+      },
+      error: (err) => {
+        console.log(err);
 
-    this._meetingSub = this.meetingService
-      .getMeetings$()
-      .subscribe((meetings) => {
         this._loader.hide();
+
+        this._snackBar.openError(
+          'Une erreur est survenue lors de la récupération des meetings: ' +
+            err.error.detail
+        );
+      },
+    });
+
+    this._meetingSub = this.meetingService.getMeetings$().subscribe({
+      next: (meetings) => {
+        this._loader.hide();
+
         if (meetings) {
           this.meetings = meetings.filter(
             (m) => m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
           );
         }
-      });
+      },
+      error: (err) => {
+        console.log(err);
+
+        this._loader.hide();
+
+        this._snackBar.openError(
+          'Une erreur est survenue lors de la récupération des meetings: ' +
+            err.error.detail
+        );
+      },
+    });
   }
 
   public openDialog(): void {
     this._loader.show();
+
     const dialogRef = this.dialog.open(MeetingsCreateDialogComponent, {
       width: '50vw',
     });
 
-    this._dialogSub = dialogRef.afterClosed().subscribe((result) => {
-      this._loader.hide();
-      console.log('The dialog was closed');
+    this._dialogSub = dialogRef.afterClosed().subscribe({
+      next: (result) => {
+        console.log(result);
+
+        this._loader.hide();
+      },
+      error: (err) => {
+        console.log(err);
+
+        this._loader.hide();
+
+        this._snackBar.openError('Une erreur est survenue: ' + err.message);
+      },
     });
   }
 
@@ -121,7 +155,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
 
   constructor(
     private _dialogRef: MatDialogRef<MeetingsCreateDialogComponent>,
-    private _snackBar: MatSnackBar,
+    private _snackBar: SnackbarService,
     private _fb: FormBuilder,
     private _studentService: StudentService,
     private _sectionService: SectionService,
@@ -148,14 +182,27 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
 
   private initCreationMeeting() {
     this._loader.show();
+
     this.students$ = this._studentService.getStudents$();
     this.sections$ = this._sectionService.getSections$();
 
-    this._sectionSub = this.sections$.subscribe((sections) => {
-      this._loader.hide();
-      this.courses = sections.find(
-        (s) => s.id === this.selectedSection
-      )?.courses;
+    this._sectionSub = this.sections$.subscribe({
+      next: (sections) => {
+        this._loader.hide();
+        this.courses = sections.find(
+          (s) => s.id === this.selectedSection
+        )?.courses;
+      },
+      error: (err) => {
+        console.log(err);
+
+        this._loader.hide();
+
+        this._snackBar.openError(
+          'Une erreur est survenue lors de la récupération des sections: ' +
+            err.error.detail
+        );
+      },
     });
 
     this._filteredInstructorSubscription = this.createMeetingForm
@@ -167,17 +214,14 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (students) => {
           this._loader.hide();
+
           this.filteredInstructors = students;
         },
         error: (err) => {
-          this._snackBar.open(
-            'Erreur lors de la récupération des étudiants: ' + err.error.detail,
-            '',
-            {
-              duration: 3000,
-              panelClass: ['danger-color-snackbar'],
-              horizontalPosition: 'end',
-            }
+          this._loader.hide();
+
+          this._snackBar.openError(
+            'Erreur lors de la récupération des étudiants: ' + err.error.detail
           );
         },
       });
@@ -188,19 +232,16 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
     this._sectionSub = this.sections$.subscribe({
       next: (sections) => {
         this._loader.hide();
+
         this.courses = sections.find(
           (section) => section.id === event.value
         )?.courses;
       },
       error: (err) => {
-        this._snackBar.open(
-          'Erreur lors de la récupération des sections: ' + err.error.detail,
-          '',
-          {
-            duration: 3000,
-            panelClass: ['danger-color-snackbar'],
-            horizontalPosition: 'end',
-          }
+        this._loader.hide();
+
+        this._snackBar.openError(
+          'Erreur lors de la récupération des sections: ' + err.error.detail
         );
       },
     });
@@ -226,25 +267,18 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this._loader.hide();
+
           this._meetingService.meetingAdded$.next(true);
 
-          this._snackBar.open('Création du meeting réussie', '', {
-            duration: 3000,
-            panelClass: ['primary-color-snackbar'],
-            horizontalPosition: 'end',
-          });
+          this._snackBar.openSuccess('Création du meeting réussie');
 
           this._dialogRef.close();
         },
         error: (err) => {
-          this._snackBar.open(
-            'Erreur lors de la création du meeting: ' + err.error.detail,
-            '',
-            {
-              duration: 3000,
-              panelClass: ['danger-color-snackbar'],
-              horizontalPosition: 'end',
-            }
+          this._loader.hide();
+
+          this._snackBar.openError(
+            'Erreur lors de la création du meeting: ' + err.error.detail
           );
         },
       });

@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { Subject, Subscription } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { UdemyService } from 'src/app/shared/services/udemy.service';
 import { Ordering, Result, UdemyCourseList } from './udemy-video.model';
 
@@ -50,7 +51,7 @@ export class UdemyVideosComponent implements OnInit, OnDestroy {
 
   constructor(
     private _udemyService: UdemyService,
-    private _snackBar: MatSnackBar,
+    private _snackBar: SnackbarService,
     private _fb: FormBuilder,
     private _loader: LoadingService
   ) {
@@ -104,14 +105,8 @@ export class UdemyVideosComponent implements OnInit, OnDestroy {
 
           this._loader.hide();
 
-          this._snackBar.open(
-            'Erreur lors du chargement des vidéos Udemy',
-            '',
-            {
-              duration: 3000,
-              panelClass: ['danger-color-snackbar'],
-              horizontalPosition: 'end',
-            }
+          this._snackBar.openError(
+            'Erreur lors du chargement des vidéos Udemy'
           );
         },
       });
@@ -143,14 +138,8 @@ export class UdemyVideosComponent implements OnInit, OnDestroy {
 
           this._loader.hide();
 
-          this._snackBar.open(
-            'Erreur lors du chargement des vidéos Udemy',
-            '',
-            {
-              duration: 3000,
-              panelClass: ['danger-color-snackbar'],
-              horizontalPosition: 'end',
-            }
+          this._snackBar.openError(
+            'Erreur lors du chargement des vidéos Udemy'
           );
         },
       });

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@auth0/auth0-angular';
 import { Subscription } from 'rxjs';
+import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { StudentService } from 'src/app/shared/services/student.service';
 
 // export function passwordMatchValidator(): ValidatorFn {
@@ -24,7 +25,7 @@ export class RegistersComponent implements OnInit, OnDestroy {
   public hide = true;
 
   constructor(
-    private _snackBar: MatSnackBar,
+    private _snackBar: SnackbarService,
     private _fb: FormBuilder,
     private _studentService: StudentService,
     private _auth: AuthService
@@ -62,14 +63,19 @@ export class RegistersComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     this._studentSub = this._studentService
       .createStudent$(this.registerForm.value)
-      .subscribe(() => {
-        this._snackBar.open('Création du compte réussie', '', {
-          duration: 3000,
-          panelClass: ['primary-color-snackbar'],
-          horizontalPosition: 'end',
-        });
+      .subscribe({
+        next: () => {
+          this._snackBar.openSuccess('Création du compte réussie');
+          this._auth.loginWithRedirect();
+        },
+        error: (err) => {
+          console.log(err);
 
-        this._auth.loginWithRedirect();
+          this._snackBar.openError(
+            'Une erreur est survenue lors de la création du compte: ' +
+              err.error.detail
+          );
+        },
       });
   }
 

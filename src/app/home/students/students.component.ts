@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { StudentService } from 'src/app/shared/services/student.service';
 import { StudentDataSource } from './student-datasource';
 import { Student } from './student.model';
@@ -39,7 +40,7 @@ export class StudentsComponent implements AfterViewInit {
 
   constructor(
     private _studentService: StudentService,
-    private _snackBar: MatSnackBar,
+    private _snackBar: SnackbarService,
     private _loader: LoadingService
   ) {
     this.dataSource = new StudentDataSource();
@@ -55,15 +56,14 @@ export class StudentsComponent implements AfterViewInit {
         this.resultsLength = students.length;
         this.table.dataSource = this.students;
       },
-      error: (err: Error) => {
+      error: (err) => {
         console.log(err);
 
         this._loader.hide();
-        this._snackBar.open('Erreur lors du chargement des formateurs', '', {
-          duration: 3000,
-          panelClass: ['danger-color-snackbar'],
-          horizontalPosition: 'end',
-        });
+
+        this._snackBar.openError(
+          'Erreur lors du chargement des formateurs: ' + err.error.detail
+        );
       },
     });
   }

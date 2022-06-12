@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -10,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable, Subscription } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { StudentService } from 'src/app/shared/services/student.service';
 import { Rating, StudentDetailed, StudentEditionInput } from './profile.model';
 
@@ -37,7 +37,7 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   public emailFormControl = new FormControl({ value: null, disabled: true });
 
   constructor(
-    private _snackBar: MatSnackBar,
+    private _snackBar: SnackbarService,
     private _fb: FormBuilder,
     public auth: AuthService,
     private _studentService: StudentService,
@@ -56,32 +56,59 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._loader.show();
 
-    this._errorSub = this._studentService.error.subscribe((errorMessage) => {
-      this.error = errorMessage;
+    this._errorSub = this._studentService.error.subscribe({
+      next: (errorMessage) => {
+        this._loader.hide();
+
+        this.error = errorMessage;
+      },
     });
 
-    this._studentSub = this._studentService.studentDetailedChanged$.subscribe(
-      (student: StudentDetailed) => {
+    this._studentSub = this._studentService.studentDetailedChanged$.subscribe({
+      next: (student: StudentDetailed) => {
         this._loader.hide();
+
         this.detailedStudent = student;
         this.profileForm.get('firstName')?.patchValue(student.firstName);
         this.profileForm.get('lastName')?.patchValue(student.lastName);
         this.profileForm.get('description')?.patchValue(student.description);
-      }
-    );
+      },
+      error: (err) => {
+        console.log(err);
 
-    this._authSub = this.auth.getUser().subscribe((user) => {
-      this._loader.hide();
-      this._userId = user?.sub as string;
+        this._loader.hide();
 
-      console.log(this._userId);
-      this.detailedStudent = this._studentService.getDetailedStudent(
-        this._userId
-      );
+        this._snackBar.openError(
+          'Une erreur est survenue lors de la récupération du profil: ' +
+            err.error.detail
+        );
+      },
+    });
 
-      this.ratings$ = this._studentService.getStudentRatings$(this._userId);
+    this._authSub = this.auth.getUser().subscribe({
+      next: (user) => {
+        this._loader.hide();
+        this._userId = user?.sub as string;
 
-      this.emailFormControl.setValue(user?.email);
+        console.log(this._userId);
+        this.detailedStudent = this._studentService.getDetailedStudent(
+          this._userId
+        );
+
+        this.ratings$ = this._studentService.getStudentRatings$(this._userId);
+
+        this.emailFormControl.setValue(user?.email);
+      },
+      error: (err) => {
+        console.log(err);
+
+        this._loader.hide();
+
+        this._snackBar.openError(
+          'Une erreur est survenue lors de la récupération du profil: ' +
+            err.error.detail
+        );
+      },
     });
   }
 
@@ -98,14 +125,24 @@ export class ProfilesComponent implements OnInit, OnDestroy {
 
     this._updateStudentSub = this._studentService
       .updateStudentProfile$(id, studentInput)
-      .subscribe(() => {
-        this._loader.hide();
+      .subscribe({
+        next: () => {
+          this._loader.hide();
 
-        this._snackBar.open('Votre profile a été mis à jour avec succès', '', {
-          duration: 3000,
-          panelClass: ['primary-color-snackbar'],
-          horizontalPosition: 'end',
-        });
+          this._snackBar.openSuccess(
+            'Votre profile a été mis à jour avec succès'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+
+          this._loader.hide();
+
+          this._snackBar.openError(
+            'Une erreur est survenue lors de la mise à jour du profil: ' +
+              err.error.detail
+          );
+        },
       });
   }
 
