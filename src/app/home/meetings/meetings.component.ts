@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Observable, startWith, Subscription, switchMap } from 'rxjs';
+import {
+  mergeAll,
+  mergeMap,
+  Observable,
+  startWith,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { Section } from 'src/app/shared/models/section.model';
 import { SectionService } from 'src/app/shared/services/section.service';
 import { StudentService } from 'src/app/shared/services/student.service';
@@ -44,6 +51,7 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 
   private initMeetingAddedSubscription(): void {
     this._loader.show();
+
     this._meetingAddedSub = this.meetingService.meetingAdded$.subscribe({
       next: (data: boolean) => {
         this._loader.hide();

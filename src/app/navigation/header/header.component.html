@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-  <div fxHide.gt-xs>
+  <div fxHide.gt-sm>
     <button mat-icon-button (click)="onToggleSidenav()">
       <mat-icon>menu</mat-icon>
     </button>
@@ -10,7 +10,7 @@
       ><span id="student-title">Student</span></a
     >
   </div>
-  <div fxFlex fxLayout fxLayoutAlign="space-between center" fxHide.xs>
+  <div fxFlex fxLayout fxLayoutAlign="space-between center" fxHide.sm fxHide.xs>
     <ul fxLayout fxLayoutGap="10px" class="navigation-items">
       <ng-container *ngIf="auth.isAuthenticated$ | async">
         <li>
@@ -44,6 +44,7 @@
           </button>
         </li>
       </ng-container>
+
       <ng-template #loggedOut>
         <li>
           <button mat-button (click)="auth.loginWithRedirect()">

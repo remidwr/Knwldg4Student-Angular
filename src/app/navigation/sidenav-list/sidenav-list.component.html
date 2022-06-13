@@ -1,13 +1,48 @@
 <mat-nav-list>
-  <a mat-list-item routerLink="/home" (click)="onSidenavClose()">
-    <mat-icon>home</mat-icon> <span class="nav-caption">Home</span>
-  </a>
-  <a mat-list-item routerLink="/students" (click)="onSidenavClose()">
-    <mat-icon>assignment_ind</mat-icon>
-    <span class="nav-caption">Owner Actions</span>
-  </a>
-  <a mat-list-item routerLink="#" (click)="onSidenavClose()">
-    <mat-icon>account_balance</mat-icon
-    ><span class="nav-caption">Account Actions</span>
-  </a>
+  <ng-container *ngIf="auth.isAuthenticated$ | async">
+    <a mat-list-item routerLink="/students" (click)="onSidenavClose()">
+      <mat-icon>people</mat-icon>
+      <span class="nav-caption">Formateurs</span>
+    </a>
+  </ng-container>
+  <ng-container *ngIf="auth.isAuthenticated$ | async">
+    <a mat-list-item routerLink="/meetings" (click)="onSidenavClose()">
+      <mat-icon>calendar_today</mat-icon>
+      <span class="nav-caption">Meetings</span>
+    </a>
+  </ng-container>
+  <ng-container *ngIf="auth.isAuthenticated$ | async">
+    <a mat-list-item routerLink="/online-training" (click)="onSidenavClose()">
+      <mat-icon>video_library</mat-icon
+      ><span class="nav-caption">Formations en ligne</span>
+    </a>
+  </ng-container>
+  <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/profile" (click)="onSidenavClose()">
+      <mat-icon>account_circle</mat-icon><span class="nav-caption">Profil</span>
+    </a>
+    <a
+      mat-list-item
+      (click)="auth.logout({ returnTo: document.location.origin })"
+      (click)="onSidenavClose()"
+    >
+      <mat-icon>exit_to_app</mat-icon
+      ><span class="nav-caption">Se déconnecter</span>
+    </a>
+  </ng-container>
+  <ng-template #loggedOut>
+    <a
+      mat-list-item
+      (click)="auth.loginWithRedirect()"
+      (click)="onSidenavClose()"
+    >
+      <mat-icon>lock_open</mat-icon
+      ><span class="nav-caption">Se connecter</span>
+    </a>
+    <a mat-list-item routerLink="/register" (click)="onSidenavClose()">
+      <mat-icon>person_add</mat-icon
+      ><span class="nav-caption">S'enregistrer</span>
+    </a>
+  </ng-template>
 </mat-nav-list>
