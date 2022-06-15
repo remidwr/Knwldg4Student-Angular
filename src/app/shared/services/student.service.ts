@@ -8,7 +8,11 @@ import {
 } from 'src/app/home/profiles/profile.model';
 import { environment as env } from 'src/environments/environment';
 import { StudentInput } from '../../home/registers/register.model';
-import { Student, StudentsVm } from '../../home/students/student.model';
+import {
+  Student,
+  StudentsVm,
+  UsersRole,
+} from '../../home/students/student.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +48,12 @@ export class StudentService {
 
         return results;
       })
+    );
+  }
+
+  public getUsersRole$(studentId: string): Observable<UsersRole> {
+    return this._http.get<UsersRole>(
+      `${this.API_URL}/api/v1/students/${studentId}/role`
     );
   }
 

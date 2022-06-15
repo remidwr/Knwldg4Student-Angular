@@ -9,3 +9,8 @@ export interface Student {
   lastName: string;
   averageRating: number;
 }
+
+export interface UsersRole {
+  id: string;
+  name: string;
+}

@@ -85,8 +85,6 @@ export class UdemyVideosComponent implements OnInit, OnDestroy {
         next: (udemyCourses) => {
           this._loader.hide();
 
-          console.log(this.tableRef);
-
           this.tableRef.nativeElement.scrollIntoView();
 
           this.udemyCourses = udemyCourses;

@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { AuthService, User } from '@auth0/auth0-angular';
+import { StudentService } from '../shared/services/student.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-home',

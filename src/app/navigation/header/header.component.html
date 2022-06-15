@@ -12,7 +12,7 @@
   </div>
   <div fxFlex fxLayout fxLayoutAlign="space-between center" fxHide.sm fxHide.xs>
     <ul fxLayout fxLayoutGap="10px" class="navigation-items">
-      <ng-container *ngIf="auth.isAuthenticated$ | async">
+      <ng-container *ngIf="auth.isAuthenticated$ && isAdmin$ | async">
         <li>
           <button mat-button routerLink="/students">Formateurs</button>
         </li>
@@ -36,12 +36,7 @@
           <button mat-button routerLink="/profile">Profil</button>
         </li>
         <li>
-          <button
-            mat-button
-            (click)="auth.logout({ returnTo: document.location.origin })"
-          >
-            Se déconnecter
-          </button>
+          <button mat-button (click)="onLogout()">Se déconnecter</button>
         </li>
       </ng-container>
 
