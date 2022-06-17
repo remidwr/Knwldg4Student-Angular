@@ -3,7 +3,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
-import { Subscription } from 'rxjs';
+import { AuthService } from '@auth0/auth0-angular';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { StudentService } from 'src/app/shared/services/student.service';
@@ -38,6 +39,8 @@ export class StudentsComponent implements AfterViewInit {
   public isLoadingResults = false;
   public isRateLimitReached = false;
 
+  public isAdmin$ = new BehaviorSubject<boolean>(false);
+
   constructor(
     private _studentService: StudentService,
     private _snackBar: SnackbarService,
@@ -48,6 +51,13 @@ export class StudentsComponent implements AfterViewInit {
 
   ngOnInit(): void {
     this._loader.show();
+
+    let usersRole = localStorage.getItem('usersRole');
+
+    if (usersRole === 'Owner' || usersRole === 'Admin') {
+      this.isAdmin$.next(true);
+      this.displayedColumns.splice(1, 0, 'role');
+    }
 
     this.studentSub = this._studentService.getStudents$().subscribe({
       next: (students: Student[]) => {

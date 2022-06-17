@@ -1,6 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, Subject, tap } from 'rxjs';
+import {
+  concatMap,
+  filter,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { UserDetailed } from 'src/app/home/administration/user.model';
 import {
   Rating,
   StudentDetailed,
@@ -21,6 +32,7 @@ export class StudentService {
   private API_URL = env.API_URL;
   public studentsChanged$ = new Subject<Student[]>();
   public studentDetailedChanged$ = new Subject<StudentDetailed>();
+  public studentWithRoleChanged$ = new Subject<UserDetailed>();
   private _students: Student[] = [];
   private _studentDetailed!: StudentDetailed;
   public error$ = new Subject<string>();

@@ -7,6 +7,7 @@ export interface Student {
   username: string;
   firstName: string;
   lastName: string;
+  role: string;
   averageRating: number;
 }
 

@@ -35,6 +35,11 @@
       <td mat-cell *matCellDef="let student">{{ student.lastName }}</td>
     </ng-container>
 
+    <ng-container *ngIf="isAdmin$ | async" matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Rôle</th>
+      <td mat-cell *matCellDef="let student">{{ student.role }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="averageRating">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Note moyenne</th>
       <td mat-cell *matCellDef="let student">

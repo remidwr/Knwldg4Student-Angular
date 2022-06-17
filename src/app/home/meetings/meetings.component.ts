@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   concatMap,
+  debounceTime,
   filter,
   mergeAll,
   mergeMap,
@@ -215,6 +216,7 @@ export class MeetingsCreateDialogComponent implements OnInit, OnDestroy {
       .get('instructorId')
       ?.valueChanges.pipe(
         startWith(''),
+        debounceTime(800),
         switchMap((value) => this._studentService.searchStudents$(value))
       )
       .subscribe({
