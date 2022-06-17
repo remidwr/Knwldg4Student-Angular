@@ -29,6 +29,7 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { UdemyVideosComponent } from './home/udemy-videos/udemy-videos.component';
 import { NetworkInterceptor } from './shared/interceptors/network.interceptor';
+import { AdministrationComponent } from './home/administration/administration.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -45,6 +46,7 @@ registerLocaleData(localeFr, 'fr');
     MeetingsComponent,
     MeetingsCreateDialogComponent,
     UdemyVideosComponent,
+    AdministrationComponent,
   ],
   imports: [
     CommonModule,

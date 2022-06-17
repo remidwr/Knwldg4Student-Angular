@@ -14,3 +14,13 @@ export interface UsersRole {
   id: string;
   name: string;
 }
+
+export interface RolesVm {
+  roles: Role[];
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+}

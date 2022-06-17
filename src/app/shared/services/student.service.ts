@@ -23,7 +23,7 @@ export class StudentService {
   public studentDetailedChanged$ = new Subject<StudentDetailed>();
   private _students: Student[] = [];
   private _studentDetailed!: StudentDetailed;
-  public error = new Subject<string>();
+  public error$ = new Subject<string>();
 
   constructor(private _http: HttpClient) {}
 
@@ -94,7 +94,7 @@ export class StudentService {
         },
         error: (err) => {
           if (err.status === 401) {
-            this.error.next('Access denied.');
+            this.error$.next('Access denied.');
           }
         },
       });

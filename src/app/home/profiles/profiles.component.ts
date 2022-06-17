@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '@auth0/auth0-angular';
-import { Observable, Subscription } from 'rxjs';
+import { mergeMap, Observable, Subscription } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { SnackbarService } from 'src/app/shared/services/snackbar.service';
 import { StudentService } from 'src/app/shared/services/student.service';
@@ -55,7 +55,7 @@ export class ProfilesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._loader.show();
 
-    this._errorSub = this._studentService.error.subscribe({
+    this._errorSub = this._studentService.error$.subscribe({
       next: (errorMessage) => {
         this._loader.hide();
 
@@ -110,7 +110,6 @@ export class ProfilesComponent implements OnInit, OnDestroy {
       },
     });
   }
-
   public onSubmit(): void {
     this._loader.show();
 

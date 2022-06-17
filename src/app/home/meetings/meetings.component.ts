@@ -2,12 +2,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
+  concatMap,
+  filter,
   mergeAll,
   mergeMap,
   Observable,
   startWith,
   Subscription,
   switchMap,
+  tap,
 } from 'rxjs';
 import { Section } from 'src/app/shared/models/section.model';
 import { SectionService } from 'src/app/shared/services/section.service';
@@ -52,35 +55,32 @@ export class MeetingsComponent implements OnInit, OnDestroy {
   private initMeetingAddedSubscription(): void {
     this._loader.show();
 
-    this._meetingAddedSub = this.meetingService.meetingAdded$.subscribe({
-      next: (data: boolean) => {
-        this._loader.hide();
+    this.meetingService.meetingAdded$
+      .pipe(
+        filter((value) => value === true),
+        concatMap(() => this.meetingService.getMeetings$())
+      )
+      .subscribe({
+        next: (meetings) => {
+          this._loader.hide();
 
-        if (data) {
-          this._meetingSub = this.meetingService
-            .getMeetings$()
-            .subscribe((meetings) => {
-              if (meetings) {
-                this._loader.hide();
-                this.meetings = meetings.filter(
-                  (m) =>
-                    m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
-                );
-              }
-            });
-        }
-      },
-      error: (err) => {
-        console.log(err);
+          if (meetings) {
+            this.meetings = meetings.filter(
+              (m) => m.statusName !== 'Terminé' && new Date(m.endAt) > this.now
+            );
+          }
+        },
+        error: (err) => {
+          console.log(err);
 
-        this._loader.hide();
+          this._loader.hide();
 
-        this._snackBar.openError(
-          'Une erreur est survenue lors de la récupération des meetings: ' +
-            err.error.detail
-        );
-      },
-    });
+          this._snackBar.openError(
+            'Une erreur est survenue lors de la récupération des meetings: ' +
+              err.error.detail
+          );
+        },
+      });
 
     this._meetingSub = this.meetingService.getMeetings$().subscribe({
       next: (meetings) => {
@@ -114,8 +114,6 @@ export class MeetingsComponent implements OnInit, OnDestroy {
 
     this._dialogSub = dialogRef.afterClosed().subscribe({
       next: (result) => {
-        console.log(result);
-
         this._loader.hide();
       },
       error: (err) => {

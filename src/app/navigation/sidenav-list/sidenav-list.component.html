@@ -19,6 +19,12 @@
   </ng-container>
   <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
     <mat-divider></mat-divider>
+    <ng-container *ngIf="isAdmin$ | async">
+      <a mat-list-item routerLink="/administration" (click)="onSidenavClose()">
+        <mat-icon>people</mat-icon>
+        <span class="nav-caption">Administration</span>
+      </a>
+    </ng-container>
     <a mat-list-item routerLink="/profile" (click)="onSidenavClose()">
       <mat-icon>account_circle</mat-icon><span class="nav-caption">Profil</span>
     </a>
